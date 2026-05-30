@@ -66,6 +66,31 @@
   to { transform: translateY(100%); opacity: 0; }
 }
 
+@keyframes instrument-sweep {
+  from { transform: translateX(-120%); opacity: 0; }
+  18% { opacity: 0.2; }
+  52% { opacity: 0.34; }
+  to { transform: translateX(120%); opacity: 0; }
+}
+
+@keyframes field-drift {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 42px 0, 0 42px, 0 0; }
+}
+
+@keyframes receipt-insert {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+    background-color: rgba(197, 138, 42, 0.18);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: transparent;
+  }
+}
+
 @keyframes evidence-settle {
   from {
     opacity: 0;
@@ -93,6 +118,17 @@ body {
     linear-gradient(180deg, rgba(255,255,255,0.025) 1px, transparent 1px) 0 0 / 42px 42px,
     radial-gradient(circle at top right, rgba(197, 138, 42, 0.18), transparent 28rem),
     var(--graphite-950);
+  animation: field-drift 32s linear infinite;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(circle at 15% 20%, rgba(243, 181, 77, 0.08), transparent 18rem);
+  opacity: 0.72;
 }
 
 button { color: inherit; font: inherit; }
@@ -204,6 +240,19 @@ h3 { margin-bottom: 0.65rem; }
     transform var(--motion-medium) var(--ease-instrument);
 }
 
+.signal-tab::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(243, 181, 77, 0.66), transparent);
+  opacity: 0;
+  transform: scaleX(0.2);
+  transition:
+    opacity var(--motion-medium) var(--ease-instrument),
+    transform var(--motion-medium) var(--ease-instrument);
+}
+
 .signal-tab:hover:not([aria-pressed='true']) {
   border-color: rgba(243, 181, 77, 0.46);
   color: var(--bone-50);
@@ -218,6 +267,11 @@ h3 { margin-bottom: 0.65rem; }
 .signal-tab[aria-pressed='true']::before {
   opacity: 0.64;
   transform: scaleY(1);
+}
+
+.signal-tab[aria-pressed='true']::after {
+  opacity: 0.74;
+  transform: scaleX(1);
 }
 
 .signal-tab:focus-visible,
@@ -293,6 +347,17 @@ h3 { margin-bottom: 0.65rem; }
   animation: score-calibrate 780ms var(--ease-signal-hold) 180ms both;
 }
 
+.signal-score-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 0 34%, rgba(243, 181, 77, 0.12) 48%, transparent 62%);
+  mix-blend-mode: screen;
+  animation: instrument-sweep 3.8s var(--ease-signal-hold) 1.2s infinite;
+}
+
 .signal-score-block::after {
   content: '';
   position: absolute;
@@ -359,12 +424,23 @@ h3 { margin-bottom: 0.65rem; }
 }
 
 .context-item {
+  position: relative;
+  overflow: hidden;
   display: grid;
   gap: 0.35rem;
   min-height: 5rem;
   padding: 0.85rem;
   background: var(--graphite-800);
   animation: context-settle var(--motion-medium) var(--ease-instrument) both;
+}
+
+.context-item::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(243,181,77,0), rgba(243,181,77,0.42), rgba(243,181,77,0));
+  opacity: 0.42;
 }
 
 .context-item:nth-child(2) { animation-delay: calc(var(--motion-stagger) * 1); }
@@ -510,6 +586,7 @@ h3 { margin-bottom: 0.65rem; }
 }
 
 .plate-list li::marker { color: var(--amber); }
+.trail-list li:first-child { animation: receipt-insert var(--motion-medium) var(--ease-instrument) both; }
 
 .review-strip {
   display: grid;
@@ -575,11 +652,14 @@ h3 { margin-bottom: 0.65rem; }
   .console-stage,
   .signal-hero,
   .signal-score-block,
+  .signal-score-block::before,
   .signal-score-block::after,
   .context-item,
   .evidence-plate,
   .gate-card.locked,
-  .signal-tab::before {
+  .signal-tab::before,
+  .signal-tab::after,
+  .trail-list li:first-child {
     transform: none !important;
   }
 }

@@ -109,7 +109,17 @@ function renderActionButton(action: { label: string; disabled?: boolean; disable
   return `<button data-action="${escapeHtml(action.label)}" ${disabledAttributes}>${escapeHtml(action.label)}</button>`;
 }
 
-function render(): void {
+function renderActivityTrail(): void {
+  const trailPanel = document.querySelector<HTMLElement>('[data-trail-panel]');
+  if (!trailPanel) return;
+
+  trailPanel.innerHTML = `
+    <p class="eyebrow">Local action trail</p>
+    ${renderList(activityTrail, 'trail-list')}
+  `;
+}
+
+function renderShell(): void {
   const view = buildConsoleView(selectedScenario);
   const [facts, inferences, gaps, gates] = view.lanes;
   const actionBlocked = view.magnitude.actionState === 'blocked';
@@ -187,7 +197,7 @@ function render(): void {
           ${view.actions.map(renderActionButton).join('')}
         </section>
 
-        <section class="trail-panel" aria-label="Local in-memory action trail">
+        <section class="trail-panel" data-trail-panel aria-label="Local in-memory action trail">
           <p class="eyebrow">Local action trail</p>
           ${renderList(activityTrail, 'trail-list')}
         </section>
@@ -201,7 +211,7 @@ function render(): void {
       if (!next) return;
       selectedScenario = next;
       activityTrail = [`Switched to synthetic signal: ${next.brand} · ${next.surface}.`];
-      render();
+      renderShell();
     });
   });
 
@@ -212,9 +222,9 @@ function render(): void {
         `${action} selected for ${selectedScenario.brand} · ${selectedScenario.surface}. No external action was taken.`,
         ...activityTrail
       ].slice(0, 5);
-      render();
+      renderActivityTrail();
     });
   });
 }
 
-render();
+renderShell();

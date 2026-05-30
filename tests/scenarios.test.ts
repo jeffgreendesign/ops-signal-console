@@ -245,6 +245,17 @@ describe('Ops Signal Console scenario model', () => {
     expect(config).toContain('polyfill: false');
   });
 
+  it('updates mock action receipts without re-rendering the full console shell', () => {
+    const source = readProjectFile('src/main.ts');
+
+    expect(source).toContain('function renderActivityTrail');
+    expect(source).toContain('renderActivityTrail();');
+    expect(source).toContain('const trailPanel = document.querySelector<HTMLElement>');
+
+    const actionHandler = source.slice(source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action]')"));
+    expect(actionHandler).not.toContain('render();');
+  });
+
   it('keeps the motion layer tokenized and stable for reduced-motion users', () => {
     const css = readProjectFile('src/styles.css');
 
@@ -253,6 +264,8 @@ describe('Ops Signal Console scenario model', () => {
     expect(css).toContain('@keyframes console-enter');
     expect(css).toContain('@keyframes score-calibrate');
     expect(css).toContain('@keyframes evidence-settle');
+    expect(css).toContain('@keyframes instrument-sweep');
+    expect(css).toContain('@keyframes receipt-insert');
     expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     expect(css).toContain('animation-duration: 0.001ms !important');
     expect(css).toContain('transform: none !important');
