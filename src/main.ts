@@ -158,6 +158,10 @@ function renderShell(): void {
         <p class="eyebrow">Synthetic portfolio console</p>
         <h1>Ops Signal Console</h1>
         <p class="lede">Portfolio launch signals across invented brands. Bone evidence plates. Amber review gates. No live systems.</p>
+        <div class="mode-stack" aria-label="Demo mode and data boundary">
+          <span>Deterministic display model</span>
+          <span>Synthetic scenarios only</span>
+        </div>
         <div class="signal-tabs">
           ${scenarios.map(renderScenarioButton).join('')}
         </div>
@@ -178,6 +182,10 @@ function renderShell(): void {
             <p class="eyebrow">Current signal · ${escapeHtml(selectedScenario.observedAt.slice(0, 10))}</p>
             <h2>${escapeHtml(selectedScenario.title)}</h2>
             <p>${escapeHtml(view.subheader)}</p>
+            <div class="model-note">
+              <span>Display-safe model output</span>
+              <span>Invented facts, risks, gaps, and gates</span>
+            </div>
             <div class="hero-tags">
               <span class="risk-tag">[${view.riskBadge.toUpperCase()} RISK]</span>
               <span>[${view.confidenceLabel.toUpperCase()}]</span>
@@ -208,6 +216,10 @@ function renderShell(): void {
         </section>
 
         <section class="evidence-grid" aria-label="Evidence plates">
+          <div class="section-kicker evidence-kicker">
+            <p class="eyebrow">Evidence model</p>
+            <strong>Facts, inferences, gaps, and gates stay visually separated.</strong>
+          </div>
           ${renderLane(facts.label, facts.items, 'facts')}
           ${renderLane(inferences.label, inferences.items, 'inference')}
           ${renderLane(gaps.label, gaps.items, 'gaps')}
@@ -223,6 +235,10 @@ function renderShell(): void {
         </section>
 
         <section class="action-console" aria-label="Mock actions">
+          <div class="action-context">
+            <p class="eyebrow">Mock action boundary</p>
+            <strong>Buttons update only the local in-memory trail.</strong>
+          </div>
           ${view.actions.map(renderActionButton).join('')}
         </section>
 
