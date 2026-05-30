@@ -310,6 +310,17 @@ describe('Ops Signal Console scenario model', () => {
     expect(css).toContain('transform: none !important');
   });
 
+  it('keeps desktop signal header responsive when the window is short or resized', () => {
+    const css = readProjectFile('src/styles.css');
+
+    expect(css).toContain('font-size: clamp(2rem, min(5vw, 9vh), 5.2rem);');
+    expect(css).toContain('grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr);');
+    expect(css).toContain('min-height: clamp(16rem, 45vh, 21rem);');
+    expect(css).toContain('@media (min-width: 921px) and (max-height: 720px)');
+    expect(css).toContain('.signal-hero { min-height: clamp(13.5rem, 42vh, 17rem); }');
+    expect(css).toContain('.signal-copy { align-content: center; padding: 1rem 1.25rem; }');
+  });
+
   it('separates Bonefield identity accents from warning and danger state colors', () => {
     const css = readProjectFile('src/styles.css');
 
@@ -318,10 +329,10 @@ describe('Ops Signal Console scenario model', () => {
     expect(css).toContain('--warning:');
     expect(css).toContain('--danger:');
     expect(css).toContain('.signal-medium .tab-score');
-    expect(css).toContain('border-color: color-mix(in srgb, var(--warning) 72%, transparent);');
     expect(css).toContain('.signal-high .tab-score');
-    expect(css).toContain('border-color: color-mix(in srgb, var(--danger) 78%, transparent);');
-    expect(css).toContain('box-shadow: inset 0 -6px 0 var(--danger)');
-    expect(css).toContain('box-shadow: inset 4px 0 0 var(--brass-bright)');
+    expect(css).toContain('--risk-color: var(--warning);');
+    expect(css).toContain('--risk-color: var(--danger);');
+    expect(css).toContain('border-color: color-mix(in srgb, var(--risk-bright) 78%, transparent);');
+    expect(css).toContain('box-shadow: inset 4px 0 0 var(--risk-bright, var(--brass-bright))');
   });
 });
