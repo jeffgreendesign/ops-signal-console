@@ -309,4 +309,19 @@ describe('Ops Signal Console scenario model', () => {
     expect(css).toContain('animation-duration: 0.001ms !important');
     expect(css).toContain('transform: none !important');
   });
+
+  it('separates Bonefield identity accents from warning and danger state colors', () => {
+    const css = readProjectFile('src/styles.css');
+
+    expect(css).toContain('--brass:');
+    expect(css).toContain('--brass-bright:');
+    expect(css).toContain('--warning:');
+    expect(css).toContain('--danger:');
+    expect(css).toContain('.signal-medium .tab-score');
+    expect(css).toContain('border-color: color-mix(in srgb, var(--warning) 72%, transparent);');
+    expect(css).toContain('.signal-high .tab-score');
+    expect(css).toContain('border-color: color-mix(in srgb, var(--danger) 78%, transparent);');
+    expect(css).toContain('box-shadow: inset 0 -6px 0 var(--danger)');
+    expect(css).toContain('box-shadow: inset 4px 0 0 var(--brass-bright)');
+  });
 });
