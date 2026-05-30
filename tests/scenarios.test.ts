@@ -244,4 +244,17 @@ describe('Ops Signal Console scenario model', () => {
     expect(config).toContain('modulePreload');
     expect(config).toContain('polyfill: false');
   });
+
+  it('keeps the motion layer tokenized and stable for reduced-motion users', () => {
+    const css = readProjectFile('src/styles.css');
+
+    expect(css).toContain('--motion-quick');
+    expect(css).toContain('--ease-instrument');
+    expect(css).toContain('@keyframes console-enter');
+    expect(css).toContain('@keyframes score-calibrate');
+    expect(css).toContain('@keyframes evidence-settle');
+    expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+    expect(css).toContain('animation-duration: 0.001ms !important');
+    expect(css).toContain('transform: none !important');
+  });
 });

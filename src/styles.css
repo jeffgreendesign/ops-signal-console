@@ -19,6 +19,67 @@
   --rust: #a7432f;
   --line-dark: rgba(251, 244, 228, 0.18);
   --line-bone: rgba(23, 20, 15, 0.16);
+
+  /* Motion tokens: restrained signal-instrument calibration. */
+  --motion-quick: 120ms;
+  --motion-medium: 240ms;
+  --motion-slow: 520ms;
+  --motion-stagger: 70ms;
+  --ease-instrument: cubic-bezier(0.2, 0.7, 0.22, 1);
+  --ease-signal-hold: cubic-bezier(0.42, 0, 0.18, 1);
+}
+
+@keyframes console-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: saturate(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: saturate(1);
+  }
+}
+
+@keyframes context-settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes score-calibrate {
+  0% { box-shadow: inset 0 0 0 0 rgba(243, 181, 77, 0); }
+  34% { box-shadow: inset 0 0 0 1px rgba(243, 181, 77, 0.3); }
+  100% { box-shadow: inset 0 0 0 0 rgba(243, 181, 77, 0); }
+}
+
+@keyframes score-scan {
+  from { transform: translateY(-100%); opacity: 0; }
+  18% { opacity: 0.34; }
+  82% { opacity: 0.18; }
+  to { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes evidence-settle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gate-held {
+  0%, 100% { background-position: 0 0; }
+  50% { background-position: 0 9px; }
 }
 
 * { box-sizing: border-box; }
@@ -110,6 +171,7 @@ h3 { margin-bottom: 0.65rem; }
 }
 
 .signal-tab {
+  position: relative;
   display: grid;
   grid-template-columns: 3rem 1fr;
   gap: 0.75rem;
@@ -121,12 +183,41 @@ h3 { margin-bottom: 0.65rem; }
   color: var(--bone-100);
   cursor: pointer;
   text-align: left;
+  transition:
+    border-color var(--motion-medium) var(--ease-instrument),
+    background-color var(--motion-medium) var(--ease-instrument),
+    box-shadow var(--motion-medium) var(--ease-instrument),
+    color var(--motion-quick) var(--ease-instrument);
+}
+
+.signal-tab::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  background: var(--amber-bright);
+  opacity: 0;
+  transform: scaleY(0.3);
+  transform-origin: center;
+  transition:
+    opacity var(--motion-medium) var(--ease-instrument),
+    transform var(--motion-medium) var(--ease-instrument);
+}
+
+.signal-tab:hover:not([aria-pressed='true']) {
+  border-color: rgba(243, 181, 77, 0.46);
+  color: var(--bone-50);
 }
 
 .signal-tab[aria-pressed='true'] {
   border-color: var(--amber-bright);
   background: #2a2419;
-  box-shadow: inset 4px 0 0 var(--amber-bright);
+  box-shadow: inset 4px 0 0 var(--amber-bright), 0 10px 28px rgba(0,0,0,0.18);
+}
+
+.signal-tab[aria-pressed='true']::before {
+  opacity: 0.64;
+  transform: scaleY(1);
 }
 
 .signal-tab:focus-visible,
@@ -176,6 +267,7 @@ h3 { margin-bottom: 0.65rem; }
   display: grid;
   gap: 1rem;
   padding: 1rem;
+  animation: console-enter var(--motion-slow) var(--ease-instrument) both;
 }
 
 .signal-hero {
@@ -185,9 +277,12 @@ h3 { margin-bottom: 0.65rem; }
   border: 1px solid var(--line-dark);
   background: var(--graphite-900);
   color: var(--bone-100);
+  animation: console-enter var(--motion-slow) var(--ease-instrument) both;
 }
 
 .signal-score-block {
+  position: relative;
+  overflow: hidden;
   display: grid;
   align-content: center;
   justify-items: center;
@@ -195,6 +290,16 @@ h3 { margin-bottom: 0.65rem; }
   background:
     linear-gradient(180deg, rgba(197, 138, 42, 0.08), transparent),
     var(--graphite-800);
+  animation: score-calibrate 780ms var(--ease-signal-hold) 180ms both;
+}
+
+.signal-score-block::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(243, 181, 77, 0.16), transparent);
+  animation: score-scan 960ms var(--ease-instrument) 120ms both;
 }
 
 .score-label,
@@ -259,7 +364,14 @@ h3 { margin-bottom: 0.65rem; }
   min-height: 5rem;
   padding: 0.85rem;
   background: var(--graphite-800);
+  animation: context-settle var(--motion-medium) var(--ease-instrument) both;
 }
+
+.context-item:nth-child(2) { animation-delay: calc(var(--motion-stagger) * 1); }
+.context-item:nth-child(3) { animation-delay: calc(var(--motion-stagger) * 2); }
+.context-item:nth-child(4) { animation-delay: calc(var(--motion-stagger) * 3); }
+.context-item:nth-child(5) { animation-delay: calc(var(--motion-stagger) * 4); }
+.context-item:nth-child(6) { animation-delay: calc(var(--motion-stagger) * 5); }
 
 .context-item span {
   color: var(--amber-bright);
@@ -324,12 +436,20 @@ h3 { margin-bottom: 0.65rem; }
 .radius-step.active i {
   border-style: solid;
   background: linear-gradient(180deg, rgba(197,138,42,0.68), rgba(197,138,42,0.12));
+  transition:
+    background var(--motion-medium) var(--ease-instrument),
+    border-color var(--motion-medium) var(--ease-instrument);
 }
 
 .scale-row { display: grid; gap: 0.4rem; margin-top: 0.8rem; }
 .scale-label { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; }
-.scale-track { height: 0.85rem; border: 1px solid rgba(23,20,15,0.22); background: rgba(23,20,15,0.06); }
-.scale-track i { display: block; height: 100%; background: var(--amber); }
+.scale-track { height: 0.85rem; border: 1px solid rgba(23,20,15,0.22); background: rgba(23,20,15,0.06); overflow: hidden; }
+.scale-track i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(197,138,42,0.76), var(--amber));
+  transition: width var(--motion-slow) var(--ease-instrument);
+}
 
 .gate-card {
   display: grid;
@@ -343,7 +463,11 @@ h3 { margin-bottom: 0.65rem; }
 
 .gate-card.locked {
   border-color: rgba(167, 67, 47, 0.8);
+  background:
+    repeating-linear-gradient(180deg, rgba(167, 67, 47, 0.09) 0 1px, transparent 1px 9px),
+    #1a1711;
   box-shadow: inset 0 -6px 0 var(--rust), 0 18px 48px rgba(0,0,0,0.24);
+  animation: gate-held 1800ms var(--ease-signal-hold) infinite;
 }
 
 .gate-card span { color: var(--amber-bright); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem; }
@@ -359,11 +483,13 @@ h3 { margin-bottom: 0.65rem; }
 .evidence-plate {
   min-height: 18rem;
   padding: 1rem;
+  animation: evidence-settle var(--motion-medium) var(--ease-instrument) both;
 }
 
-.evidence-plate.inference { margin-top: 2rem; }
-.evidence-plate.gaps { margin-top: 4rem; border-style: dashed; background: #eadbbb; }
-.evidence-plate.gates { margin-top: 1rem; background: #1a1711; color: var(--bone-100); border-color: rgba(197, 138, 42, 0.45); }
+.evidence-plate.facts { animation-delay: calc(var(--motion-stagger) * 1); }
+.evidence-plate.inference { margin-top: 2rem; animation-delay: calc(var(--motion-stagger) * 2); }
+.evidence-plate.gaps { margin-top: 4rem; border-style: dashed; background: #eadbbb; animation-delay: calc(var(--motion-stagger) * 3); }
+.evidence-plate.gates { margin-top: 1rem; background: #1a1711; color: var(--bone-100); border-color: rgba(197, 138, 42, 0.45); animation-delay: calc(var(--motion-stagger) * 4); }
 
 .plate-topline {
   display: flex;
@@ -406,20 +532,57 @@ h3 { margin-bottom: 0.65rem; }
   cursor: pointer;
   padding: 0.7rem 0.85rem;
   text-transform: uppercase;
+  transition:
+    border-color var(--motion-quick) var(--ease-instrument),
+    color var(--motion-quick) var(--ease-instrument),
+    background-color var(--motion-quick) var(--ease-instrument),
+    box-shadow var(--motion-quick) var(--ease-instrument);
 }
 
 .action-console button:hover:not(:disabled) {
   border-color: var(--amber-bright);
+  background: #2a2419;
   color: var(--amber-bright);
+  box-shadow: inset 0 -2px 0 rgba(243, 181, 77, 0.42);
 }
 
 .action-console button:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
+  opacity: 0.52;
   border-style: dashed;
+  background:
+    repeating-linear-gradient(90deg, rgba(244, 234, 213, 0.07) 0 1px, transparent 1px 7px),
+    var(--graphite-800);
+}
+
+.action-console button:disabled:hover {
+  border-color: rgba(244, 234, 213, 0.22);
+  color: var(--bone-100);
 }
 
 .trail-panel { padding: 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .console-stage,
+  .signal-hero,
+  .signal-score-block,
+  .signal-score-block::after,
+  .context-item,
+  .evidence-plate,
+  .gate-card.locked,
+  .signal-tab::before {
+    transform: none !important;
+  }
+}
 
 @media (max-width: 920px) {
   .shell { grid-template-columns: 1fr; }
