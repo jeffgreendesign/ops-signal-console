@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "scan:public-safety": "node scripts/scan-public-safety.mjs"
   },
   "keywords": [
     "ops",
@@ -21,7 +22,6 @@
     "risk",
     "controls"
   ],
-  "author": "",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "latest",
