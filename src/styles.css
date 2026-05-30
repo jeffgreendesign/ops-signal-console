@@ -607,8 +607,11 @@ h3 { margin-bottom: 0.65rem; }
   background: var(--graphite-800);
   color: var(--bone-100);
   cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.2;
   padding: 0.7rem 0.85rem;
   text-transform: uppercase;
+  touch-action: manipulation;
   transition:
     border-color var(--motion-quick) var(--ease-instrument),
     color var(--motion-quick) var(--ease-instrument),

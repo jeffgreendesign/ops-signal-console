@@ -256,6 +256,14 @@ describe('Ops Signal Console scenario model', () => {
     expect(actionHandler).not.toContain('render();');
   });
 
+  it('keeps mobile action controls at a non-zooming touch font size', () => {
+    const css = readProjectFile('src/styles.css');
+
+    expect(css).toContain('touch-action: manipulation');
+    expect(css).toContain('.action-console button');
+    expect(css).toContain('font-size: 1rem');
+  });
+
   it('keeps the motion layer tokenized and stable for reduced-motion users', () => {
     const css = readProjectFile('src/styles.css');
 
