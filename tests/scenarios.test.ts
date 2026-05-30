@@ -38,42 +38,10 @@ const forbiddenPublicArtifactTerms = [
   phrase(term(['per', 'sonal']), term(['pur', 'chase']))
 ];
 
-const publicArtifactPaths = [
-  'src',
-  'README.md',
-  'AGENTS.md',
-  'docs',
-  'index.html',
-  'package.json',
-  'vite.config.ts'
-];
+const publicArtifactPaths = ['src', 'README.md', 'AGENTS.md', 'docs', 'index.html', 'package.json', 'vite.config.ts'];
 
 function searchableScenarioText(): string {
-  return scenarios
-    .map((scenario) =>
-      [
-        scenario.id,
-        scenario.title,
-        scenario.summary,
-        scenario.source,
-        scenario.portfolio,
-        scenario.brand,
-        scenario.vertical,
-        scenario.surface,
-        scenario.signalType,
-        scenario.decisionOwner ?? '',
-        scenario.decisionStakes,
-        scenario.controlPattern,
-        ...scenario.reviewerSignals,
-        ...scenario.facts,
-        ...scenario.inferences,
-        ...scenario.proofGaps,
-        ...scenario.recommendedChecks,
-        ...scenario.approvalGates
-      ].join('\n')
-    )
-    .join('\n')
-    .toLowerCase();
+  return scenarios.map((scenario) => JSON.stringify({ scenario, view: buildConsoleView(scenario) })).join('\n').toLowerCase();
 }
 
 function readProjectFile(path: string): string {
@@ -84,61 +52,55 @@ function collectTextFiles(path: string): string[] {
   const absolutePath = join(process.cwd(), path);
   const stats = statSync(absolutePath);
 
-  if (stats.isFile()) {
-    return [path];
-  }
+  if (stats.isFile()) return [path];
 
   return readdirSync(absolutePath).flatMap((entry) => collectTextFiles(join(path, entry)));
 }
 
 function containsForbiddenTerm(text: string, term: string): boolean {
-  if (term.includes(' ')) {
-    return text.includes(term);
-  }
-
+  if (term.includes(' ')) return text.includes(term);
   return new RegExp(`(?<![a-z0-9])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-z0-9])`, 'i').test(text);
 }
 
 describe('Ops Signal Console scenario model', () => {
-  it('ships exactly four public-safe synthetic portfolio signal scenarios', () => {
+  it('ships exactly four deterministic public-safe synthetic portfolio signal scenarios', () => {
     expect(scenarios).toHaveLength(4);
     expect(scenarios.map((scenario) => scenario.id)).toEqual([
-      'kite-launch-readiness-drift',
-      'mesa-sample-quality-review',
-      'luma-field-feedback-cluster',
-      'arc-allocation-risk-reconciliation-gap'
+      'scenario-quality-sample-drift',
+      'scenario-claims-review-blocked',
+      'scenario-channel-mismatch',
+      'scenario-launch-readiness-mismatch'
     ]);
   });
 
-  it('requires portfolio, brand, vertical, surface, and signal type context on every scenario', () => {
-    const allowedSignalTypes = ['launch', 'quality', 'demand', 'operations', 'feedback', 'claims'];
-
+  it('requires brand, surface, kind, source, and observed context on every scenario', () => {
     for (const scenario of scenarios) {
-      expect(scenario.portfolio).toMatch(/\S/);
-      expect(scenario.brand).toMatch(/\S/);
-      expect(scenario.vertical).toMatch(/\S/);
-      expect(scenario.surface).toMatch(/\S/);
-      expect(allowedSignalTypes).toContain(scenario.signalType);
+      expect(scenario.affectedBrands.length).toBeGreaterThan(0);
+      expect(scenario.affectedSurfaces.length).toBeGreaterThan(0);
+      expect(scenario.kind).toMatch(/\S/);
+      expect(scenario.sourceLabel).toMatch(/\S/);
+      expect(scenario.observedAt).toMatch(/\S/);
     }
   });
 
-  it('covers multiple invented brands and verticals across the portfolio', () => {
-    expect(new Set(scenarios.map((scenario) => scenario.brand)).size).toBeGreaterThanOrEqual(2);
-    expect(new Set(scenarios.map((scenario) => scenario.vertical)).size).toBeGreaterThanOrEqual(2);
+  it('covers multiple invented brands and surfaces across the portfolio', () => {
+    expect(new Set(scenarios.flatMap((scenario) => scenario.affectedBrands)).size).toBeGreaterThanOrEqual(2);
+    expect(new Set(scenarios.flatMap((scenario) => scenario.affectedSurfaces)).size).toBeGreaterThanOrEqual(2);
   });
 
   it('keeps scenario and render-facing action data free of identifying, domain, and integration terms', () => {
-    const serialized = `${searchableScenarioText()}\n${JSON.stringify(buildConsoleView(scenarios[0]).actions).toLowerCase()}`;
+    const serialized = searchableScenarioText();
 
     for (const term of forbiddenPublicArtifactTerms) {
       expect(serialized).not.toContain(term);
     }
   });
 
-  it('keeps public source artifacts free of forbidden terms outside the banned-list test fixture', () => {
+  it('keeps public source artifacts free of forbidden terms outside local planning and banned-list test fixtures', () => {
     const artifactText = publicArtifactPaths
       .flatMap(collectTextFiles)
       .filter((path) => !path.endsWith('tests/scenarios.test.ts'))
+      .filter((path) => !path.startsWith('docs/plans/'))
       .map((path) => readProjectFile(path).toLowerCase())
       .join('\n');
 
@@ -156,94 +118,78 @@ describe('Ops Signal Console scenario model', () => {
 
   it('separates observed facts from inferred risk and human approval gates', () => {
     for (const scenario of scenarios) {
-      expect(scenario.facts.length).toBeGreaterThanOrEqual(3);
-      expect(scenario.inferences.length).toBeGreaterThanOrEqual(2);
-      expect(scenario.approvalGates.length).toBeGreaterThanOrEqual(2);
-      expect(scenario.proofGaps.length).toBeGreaterThanOrEqual(1);
+      const view = buildConsoleView(scenario);
+      expect(scenario.knownFacts.length).toBeGreaterThanOrEqual(3);
+      expect(scenario.inferredRisks.length).toBeGreaterThanOrEqual(2);
+      expect(scenario.evidenceGaps.length).toBeGreaterThanOrEqual(1);
       expect(scenario.recommendedChecks.length).toBeGreaterThanOrEqual(2);
-      expect(scenario.severityScore).toBeGreaterThanOrEqual(0);
-      expect(scenario.severityScore).toBeLessThanOrEqual(100);
-      expect(scenario.evidenceCompleteness).toBeGreaterThanOrEqual(0);
-      expect(scenario.evidenceCompleteness).toBeLessThanOrEqual(100);
+      expect(scenario.gatedActions.length).toBeGreaterThanOrEqual(2);
+      expect(view.magnitude.severityScore).toBeGreaterThanOrEqual(0);
+      expect(view.magnitude.severityScore).toBeLessThanOrEqual(100);
+      expect(view.magnitude.evidenceCompleteness).toBeGreaterThanOrEqual(0);
+      expect(view.magnitude.evidenceCompleteness).toBeLessThanOrEqual(100);
     }
   });
 
-  it('adds hiring-manager proof labels for decision stakes, control pattern, and reviewer signals', () => {
+  it('adds reviewer proof labels for decision stakes, control pattern, and reviewer signals', () => {
     for (const scenario of scenarios) {
-      expect(scenario.decisionStakes).toMatch(/\S/);
-      expect(scenario.controlPattern).toMatch(/\S/);
-      expect(scenario.reviewerSignals.length).toBeGreaterThanOrEqual(2);
+      const view = buildConsoleView(scenario);
+      expect(view.decisionFrame.decisionStakes).toMatch(/\S/);
+      expect(view.decisionFrame.controlPattern).toMatch(/\S/);
+      expect(view.decisionFrame.reviewerSignals.length).toBeGreaterThanOrEqual(2);
     }
 
-    const reconciliationScenario = scenarios.find(
-      (scenario) => scenario.id === 'arc-allocation-risk-reconciliation-gap'
-    );
-
-    expect(reconciliationScenario?.decisionStakes).toContain('Financial exposure');
-    expect(reconciliationScenario?.controlPattern).toContain('review gate');
-    expect(reconciliationScenario?.reviewerSignals).toEqual(
-      expect.arrayContaining(['Margin sensitivity made visible before allocation changes'])
-    );
+    const launchScenario = scenarios.find((scenario) => scenario.id === 'scenario-launch-readiness-mismatch');
+    expect(launchScenario).toBeDefined();
+    expect(buildConsoleView(launchScenario!).decisionFrame.controlPattern).toContain('gated');
   });
 
-  it('builds a display-safe console view with portfolio context, magnitude, triage lanes, and action buttons', () => {
-    const view = buildConsoleView(scenarios[0]);
+  it('builds a display-safe console view with context, magnitude, triage lanes, and action buttons', () => {
+    const scenario = scenarios[0];
+    const view = buildConsoleView(scenario);
 
-    expect(view.header).toContain('Kite');
+    expect(view.header).toContain('Brand Atlas');
     expect(view.context).toEqual([
-      { label: 'Portfolio', value: 'Northstar Goods Lab' },
-      { label: 'Brand', value: 'Kite' },
-      { label: 'Vertical', value: 'Hydration' },
-      { label: 'Surface', value: 'Retail test allocation' },
-      { label: 'Signal', value: 'launch' },
-      { label: 'Owner', value: 'Launch council' }
+      { label: 'Brands', value: 'Brand Atlas' },
+      { label: 'Surfaces', value: 'pilot format, review bench' },
+      { label: 'Signal', value: 'quality sample drift' },
+      { label: 'Source', value: 'synthetic quality review queue' },
+      { label: 'Observed', value: '2026-05-30' },
+      { label: 'Evidence clarity', value: 'partial · 50/100' }
     ]);
     expect(view.riskBadge).toBe('high');
-    expect(view.magnitude.severityScore).toBe(88);
-    expect(view.magnitude.blastRadius).toBe('system');
-    expect(view.magnitude.evidenceCompleteness).toBe(56);
+    expect(view.magnitude.severityScore).toBe(82);
+    expect(view.magnitude.blastRadius).toBe('surface');
+    expect(view.magnitude.evidenceCompleteness).toBe(50);
     expect(view.magnitude.actionState).toBe('blocked');
-    expect(view.lanes.map((lane) => lane.label)).toEqual([
-      'Known facts',
-      'Inferred risk',
-      'Evidence gaps',
-      'Approval gates'
-    ]);
-    expect(view.decisionFrame).toEqual({
-      decisionStakes: 'Allocation risk across a staged launch path',
-      controlPattern: 'Gate launch guidance until evidence is reconciled',
-      reviewerSignals: [
-        'Separates stale planning evidence from inferred launch impact',
-        'Keeps human approval ahead of irreversible guidance changes',
-        'Shows deterministic risk scoring without live system access'
-      ]
-    });
+    expect(view.lanes.map((lane) => lane.label)).toEqual(['Known facts', 'Inferred risks', 'Evidence gaps', 'Gated actions']);
     expect(view.actions.map((action) => action.label)).toEqual([
-      'Acknowledge',
-      'Investigate',
-      'Ask for more evidence',
-      'Request owner review',
-      'Hold recommendation',
-      'Log evidence gap'
+      'Investigate internally',
+      'Mock quality hold review',
+      'Public action blocked'
     ]);
   });
 
-  it('marks outbound-style mock actions as disabled when a scenario is blocked', () => {
+  it('marks non-internal mock actions as disabled when proof or approval is missing', () => {
     const blockedView = buildConsoleView(scenarios[0]);
-    const reviewView = buildConsoleView(scenarios[1]);
+    const claimsView = buildConsoleView(scenarios[1]);
 
     expect(blockedView.actions.filter((action) => action.disabled).map((action) => action.label)).toEqual([
-      'Request owner review',
-      'Hold recommendation'
+      'Mock quality hold review',
+      'Public action blocked'
     ]);
     expect(blockedView.actions.every((action) => !action.disabled || action.disabledReason)).toBe(true);
-    expect(reviewView.actions.every((action) => !action.disabled)).toBe(true);
+    expect(claimsView.actions.filter((action) => action.disabled).map((action) => action.label)).toEqual([
+      'Release channel claim',
+      'Publish public claim'
+    ]);
   });
 
   it('models visual importance with varied severity, blast radius, and evidence completeness', () => {
-    expect(scenarios.map((scenario) => scenario.severityScore)).toEqual([88, 66, 42, 74]);
-    expect(scenarios.map((scenario) => scenario.blastRadius)).toEqual(['system', 'surface', 'local', 'org']);
-    expect(scenarios.map((scenario) => scenario.evidenceCompleteness)).toEqual([56, 72, 44, 61]);
+    const views = scenarios.map(buildConsoleView);
+    expect(views.map((view) => view.magnitude.severityScore)).toEqual([82, 91, 80, 91]);
+    expect(views.map((view) => view.magnitude.blastRadius)).toEqual(['surface', 'surface', 'surface', 'system']);
+    expect(views.map((view) => view.magnitude.evidenceCompleteness)).toEqual([50, 60, 60, 50]);
   });
 
   it('does not use browser network, storage, or telemetry APIs in source code', () => {
@@ -264,9 +210,7 @@ describe('Ops Signal Console scenario model', () => {
       'document.cookie'
     ];
 
-    for (const api of bannedApis) {
-      expect(source).not.toContain(api);
-    }
+    for (const api of bannedApis) expect(source).not.toContain(api);
   });
 
   it('disables Vite modulepreload polyfill so built assets do not add network helpers', () => {

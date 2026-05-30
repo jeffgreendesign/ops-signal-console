@@ -16,8 +16,12 @@ const radiusLabels: Record<BlastRadius, string> = {
   local: 'Local',
   surface: 'Surface',
   system: 'System',
-  org: 'Org'
+  portfolio: 'Portfolio'
 };
+
+function kindLabel(kind: Scenario['kind']): string {
+  return kind.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
+}
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"]/g, (character) => {
@@ -34,12 +38,16 @@ function escapeHtml(value: string): string {
 
 function renderScenarioButton(scenario: Scenario): string {
   const active = scenario.id === selectedScenario.id ? 'true' : 'false';
+  const view = buildConsoleView(scenario);
+  const brandLabel = scenario.affectedBrands.join(', ');
+  const surfaceLabel = scenario.affectedSurfaces.join(', ');
+
   return `
-    <button class="signal-tab signal-${scenario.risk}" data-scenario-id="${escapeHtml(scenario.id)}" aria-pressed="${active}">
-      <span class="tab-score">${scenario.severityScore}</span>
+    <button class="signal-tab signal-${view.riskBadge}" data-scenario-id="${escapeHtml(scenario.id)}" aria-pressed="${active}">
+      <span class="tab-score">${view.magnitude.severityScore}</span>
       <span class="tab-copy">
-        <strong>${escapeHtml(scenario.brand)} · ${escapeHtml(scenario.surface)}</strong>
-        <small>${escapeHtml(scenario.vertical)} · ${escapeHtml(scenario.signalType)} · ${radiusLabels[scenario.blastRadius]} radius</small>
+        <strong>${escapeHtml(brandLabel)} · ${escapeHtml(surfaceLabel)}</strong>
+        <small>${escapeHtml(kindLabel(scenario.kind))} · ${radiusLabels[view.magnitude.blastRadius ?? 'local']} radius</small>
       </span>
     </button>
   `;
@@ -59,7 +67,7 @@ function renderScale(label: string, value: number): string {
 }
 
 function renderBlastRadius(active: BlastRadius): string {
-  const steps: BlastRadius[] = ['local', 'surface', 'system', 'org'];
+  const steps: BlastRadius[] = ['local', 'surface', 'system', 'portfolio'];
   return `
     <div class="radius-ladder" aria-label="Blast radius">
       ${steps
@@ -167,14 +175,14 @@ function renderShell(): void {
             <span class="score-scale">/100</span>
           </div>
           <div class="signal-copy">
-            <p class="eyebrow">Current signal · ${selectedScenario.timestamp}</p>
+            <p class="eyebrow">Current signal · ${escapeHtml(selectedScenario.observedAt.slice(0, 10))}</p>
             <h2>${escapeHtml(selectedScenario.title)}</h2>
-            <p>${escapeHtml(selectedScenario.summary)}</p>
+            <p>${escapeHtml(view.subheader)}</p>
             <div class="hero-tags">
               <span class="risk-tag">[${view.riskBadge.toUpperCase()} RISK]</span>
               <span>[${view.confidenceLabel.toUpperCase()}]</span>
               <span class="action-tag action-${view.magnitude.actionState}">[${view.magnitude.actionState.toUpperCase()}]</span>
-              <span>[${selectedScenario.signalType.toUpperCase()} SIGNAL]</span>
+              <span>[${kindLabel(selectedScenario.kind).toUpperCase()} SIGNAL]</span>
             </div>
           </div>
         </header>
@@ -231,7 +239,7 @@ function renderShell(): void {
       const next = scenarios.find((scenario) => scenario.id === button.dataset.scenarioId);
       if (!next) return;
       selectedScenario = next;
-      activityTrail = [`Switched to synthetic signal: ${next.brand} · ${next.surface}.`];
+      activityTrail = [`Switched to synthetic signal: ${next.affectedBrands.join(', ')} · ${next.affectedSurfaces.join(', ')}.`];
       renderShell();
     });
   });
@@ -240,7 +248,7 @@ function renderShell(): void {
     button.addEventListener('click', () => {
       const action = button.dataset.action ?? 'Action';
       activityTrail = [
-        `${action} selected for ${selectedScenario.brand} · ${selectedScenario.surface}. No external action was taken.`,
+        `${action} selected for ${selectedScenario.affectedBrands.join(', ')} · ${selectedScenario.affectedSurfaces.join(', ')}. No external action was taken.`,
         ...activityTrail
       ].slice(0, 5);
       renderActivityTrail();
