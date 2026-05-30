@@ -101,6 +101,25 @@ function renderContextStrip(context: ContextItem[]): string {
   `;
 }
 
+function renderDecisionFrame(view: ReturnType<typeof buildConsoleView>): string {
+  return `
+    <section class="decision-frame" aria-label="Why this matters for review">
+      <article>
+        <p class="eyebrow">Decision stakes</p>
+        <strong>${escapeHtml(view.decisionFrame.decisionStakes)}</strong>
+      </article>
+      <article>
+        <p class="eyebrow">Control pattern</p>
+        <strong>${escapeHtml(view.decisionFrame.controlPattern)}</strong>
+      </article>
+      <article class="reviewer-proof">
+        <p class="eyebrow">Reviewer proof</p>
+        ${renderList(view.decisionFrame.reviewerSignals, 'proof-list')}
+      </article>
+    </section>
+  `;
+}
+
 function renderActionButton(action: { label: string; disabled?: boolean; disabledReason?: string }): string {
   const disabledAttributes = action.disabled
     ? `disabled aria-disabled="true" title="${escapeHtml(action.disabledReason ?? 'Blocked until review clears.') }"`
@@ -161,6 +180,8 @@ function renderShell(): void {
         </header>
 
         ${renderContextStrip(view.context)}
+
+        ${renderDecisionFrame(view)}
 
         <section class="magnitude-deck" aria-label="Signal magnitude">
           <article class="bone-card dominant">

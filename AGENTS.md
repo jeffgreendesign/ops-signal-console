@@ -27,6 +27,7 @@ DO use:
 - Display-safe facts/inferences/gaps.
 - Tests for scenario, display-model, leakage, and API-boundary invariants.
 - Static/demo-first implementation suitable for Vercel or Netlify later.
+- Reviewer-facing proof labels for decision stakes, control patterns, exposure, evidence clarity, and approval trails.
 
 ## Verification
 

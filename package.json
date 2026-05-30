@@ -16,7 +16,10 @@
     "ai",
     "prototype",
     "triage",
-    "signals"
+    "signals",
+    "portfolio",
+    "risk",
+    "controls"
   ],
   "author": "",
   "license": "MIT",

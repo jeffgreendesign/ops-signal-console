@@ -62,6 +62,9 @@ function searchableScenarioText(): string {
         scenario.surface,
         scenario.signalType,
         scenario.decisionOwner ?? '',
+        scenario.decisionStakes,
+        scenario.controlPattern,
+        ...scenario.reviewerSignals,
         ...scenario.facts,
         ...scenario.inferences,
         ...scenario.proofGaps,
@@ -97,12 +100,13 @@ function containsForbiddenTerm(text: string, term: string): boolean {
 }
 
 describe('Ops Signal Console scenario model', () => {
-  it('ships exactly three public-safe synthetic portfolio signal scenarios', () => {
-    expect(scenarios).toHaveLength(3);
+  it('ships exactly four public-safe synthetic portfolio signal scenarios', () => {
+    expect(scenarios).toHaveLength(4);
     expect(scenarios.map((scenario) => scenario.id)).toEqual([
       'kite-launch-readiness-drift',
       'mesa-sample-quality-review',
-      'luma-field-feedback-cluster'
+      'luma-field-feedback-cluster',
+      'arc-allocation-risk-reconciliation-gap'
     ]);
   });
 
@@ -164,6 +168,24 @@ describe('Ops Signal Console scenario model', () => {
     }
   });
 
+  it('adds hiring-manager proof labels for decision stakes, control pattern, and reviewer signals', () => {
+    for (const scenario of scenarios) {
+      expect(scenario.decisionStakes).toMatch(/\S/);
+      expect(scenario.controlPattern).toMatch(/\S/);
+      expect(scenario.reviewerSignals.length).toBeGreaterThanOrEqual(2);
+    }
+
+    const reconciliationScenario = scenarios.find(
+      (scenario) => scenario.id === 'arc-allocation-risk-reconciliation-gap'
+    );
+
+    expect(reconciliationScenario?.decisionStakes).toContain('Financial exposure');
+    expect(reconciliationScenario?.controlPattern).toContain('review gate');
+    expect(reconciliationScenario?.reviewerSignals).toEqual(
+      expect.arrayContaining(['Margin sensitivity made visible before allocation changes'])
+    );
+  });
+
   it('builds a display-safe console view with portfolio context, magnitude, triage lanes, and action buttons', () => {
     const view = buildConsoleView(scenarios[0]);
 
@@ -187,6 +209,15 @@ describe('Ops Signal Console scenario model', () => {
       'Evidence gaps',
       'Approval gates'
     ]);
+    expect(view.decisionFrame).toEqual({
+      decisionStakes: 'Allocation risk across a staged launch path',
+      controlPattern: 'Gate launch guidance until evidence is reconciled',
+      reviewerSignals: [
+        'Separates stale planning evidence from inferred launch impact',
+        'Keeps human approval ahead of irreversible guidance changes',
+        'Shows deterministic risk scoring without live system access'
+      ]
+    });
     expect(view.actions.map((action) => action.label)).toEqual([
       'Acknowledge',
       'Investigate',
@@ -210,9 +241,9 @@ describe('Ops Signal Console scenario model', () => {
   });
 
   it('models visual importance with varied severity, blast radius, and evidence completeness', () => {
-    expect(scenarios.map((scenario) => scenario.severityScore)).toEqual([88, 66, 42]);
-    expect(scenarios.map((scenario) => scenario.blastRadius)).toEqual(['system', 'surface', 'local']);
-    expect(scenarios.map((scenario) => scenario.evidenceCompleteness)).toEqual([56, 72, 44]);
+    expect(scenarios.map((scenario) => scenario.severityScore)).toEqual([88, 66, 42, 74]);
+    expect(scenarios.map((scenario) => scenario.blastRadius)).toEqual(['system', 'surface', 'local', 'org']);
+    expect(scenarios.map((scenario) => scenario.evidenceCompleteness)).toEqual([56, 72, 44, 61]);
   });
 
   it('does not use browser network, storage, or telemetry APIs in source code', () => {

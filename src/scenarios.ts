@@ -28,6 +28,9 @@ export interface Scenario {
   surface: string;
   signalType: SignalType;
   decisionOwner?: string;
+  decisionStakes: string;
+  controlPattern: string;
+  reviewerSignals: string[];
   risk: RiskLevel;
   confidence: ConfidenceLevel;
   severityScore: number;
@@ -59,6 +62,11 @@ export interface ConsoleView {
   riskBadge: RiskLevel;
   confidenceLabel: string;
   magnitude: SignalMagnitude;
+  decisionFrame: {
+    decisionStakes: string;
+    controlPattern: string;
+    reviewerSignals: string[];
+  };
   lanes: ConsoleLane[];
   nextChecks: string[];
   actions: ConsoleAction[];
@@ -86,6 +94,13 @@ export const scenarios: Scenario[] = [
     surface: 'Retail test allocation',
     signalType: 'launch',
     decisionOwner: 'Launch council',
+    decisionStakes: 'Allocation risk across a staged launch path',
+    controlPattern: 'Gate launch guidance until evidence is reconciled',
+    reviewerSignals: [
+      'Separates stale planning evidence from inferred launch impact',
+      'Keeps human approval ahead of irreversible guidance changes',
+      'Shows deterministic risk scoring without live system access'
+    ],
     risk: 'high',
     confidence: 'medium',
     severityScore: 88,
@@ -131,6 +146,12 @@ export const scenarios: Scenario[] = [
     surface: 'Quality sample review',
     signalType: 'quality',
     decisionOwner: 'Quality review lead',
+    decisionStakes: 'Pilot readiness with quality uncertainty',
+    controlPattern: 'Require owner review before a hold recommendation',
+    reviewerSignals: [
+      'Shows confidence can be high while proof still has gaps',
+      'Keeps a narrow surface concern from becoming an over-broad stop signal'
+    ],
     risk: 'medium',
     confidence: 'high',
     severityScore: 66,
@@ -176,6 +197,12 @@ export const scenarios: Scenario[] = [
     surface: 'Field feedback',
     signalType: 'feedback',
     decisionOwner: 'Portfolio ops lead',
+    decisionStakes: 'Local signal triage before portfolio-wide copy changes',
+    controlPattern: 'Observe one more window before escalation',
+    reviewerSignals: [
+      'Models uncertainty without forcing a false resolution',
+      'Makes low-confidence review paths visible and bounded'
+    ],
     risk: 'medium',
     confidence: 'low',
     severityScore: 42,
@@ -208,6 +235,58 @@ export const scenarios: Scenario[] = [
       'Do not suppress the cluster until the next note window is reviewed.',
       'Do not create external tasks from synthetic notes.'
     ]
+  },
+  {
+    id: 'arc-allocation-risk-reconciliation-gap',
+    title: 'Arc allocation risk review with reconciliation gap',
+    summary: 'A portfolio shift improves reach but exposes margin sensitivity and unresolved reconciliation evidence.',
+    source: 'Allocation risk review',
+    timestamp: 'Today, 16:24',
+    portfolio: 'Northstar Goods Lab',
+    brand: 'Arc',
+    vertical: 'Wellness accessories',
+    surface: 'Portfolio allocation review',
+    signalType: 'operations',
+    decisionOwner: 'Finance review chair',
+    decisionStakes: 'Financial exposure before a multi-brand launch shift',
+    controlPattern: 'Finance review gate until reconciliation evidence is clear',
+    reviewerSignals: [
+      'Margin sensitivity made visible before allocation changes',
+      'Approval trail separates recommendation from action',
+      'Evidence clarity is treated as a product surface, not hidden notes'
+    ],
+    risk: 'high',
+    confidence: 'medium',
+    severityScore: 74,
+    blastRadius: 'org',
+    evidenceCompleteness: 61,
+    actionState: 'blocked',
+    facts: [
+      'A proposed allocation shift moves launch support from two stable brands into one faster test surface.',
+      'Projected exposure increases when margin sensitivity is applied to the slower replenishment window.',
+      'The reconciliation note references a prior estimate that is newer than the review packet.',
+      'All values, brands, and review artifacts are invented for deterministic display.'
+    ],
+    inferences: [
+      'The recommendation may still be right, but the financial exposure is not review-ready.',
+      'The largest risk is approving a portfolio-level shift from a stale reconciliation packet.',
+      'A blocked action state is appropriate until a reviewer can compare the estimate versions.'
+    ],
+    proofGaps: [
+      'No live finance, planning, or reconciliation system is connected.',
+      'The prototype cannot verify which estimate is current.',
+      'Margin sensitivity needs owner review before the recommendation can advance.'
+    ],
+    recommendedChecks: [
+      'Compare the review packet with the latest reconciliation note.',
+      'Ask the finance review chair to confirm the current estimate version.',
+      'Record whether exposure changes the allocation recommendation or only the approval sequence.'
+    ],
+    approvalGates: [
+      'Do not advance allocation changes without finance review chair approval.',
+      'Do not treat stale estimates as cleared evidence.',
+      'Do not write to planning, finance, or approval systems.'
+    ]
   }
 ];
 
@@ -230,6 +309,11 @@ export function buildConsoleView(scenario: Scenario): ConsoleView {
       blastRadius: scenario.blastRadius,
       evidenceCompleteness: scenario.evidenceCompleteness,
       actionState: scenario.actionState
+    },
+    decisionFrame: {
+      decisionStakes: scenario.decisionStakes,
+      controlPattern: scenario.controlPattern,
+      reviewerSignals: scenario.reviewerSignals
     },
     lanes: [
       { label: 'Known facts', items: scenario.facts },
