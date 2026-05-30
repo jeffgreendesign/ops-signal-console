@@ -171,9 +171,9 @@ function renderShell(): void {
             <h2>${escapeHtml(selectedScenario.title)}</h2>
             <p>${escapeHtml(selectedScenario.summary)}</p>
             <div class="hero-tags">
-              <span>[${view.riskBadge.toUpperCase()} RISK]</span>
+              <span class="risk-tag">[${view.riskBadge.toUpperCase()} RISK]</span>
               <span>[${view.confidenceLabel.toUpperCase()}]</span>
-              <span>[${view.magnitude.actionState.toUpperCase()}]</span>
+              <span class="action-tag action-${view.magnitude.actionState}">[${view.magnitude.actionState.toUpperCase()}]</span>
               <span>[${selectedScenario.signalType.toUpperCase()} SIGNAL]</span>
             </div>
           </div>
@@ -193,7 +193,7 @@ function renderShell(): void {
             ${renderScale('Completeness', view.magnitude.evidenceCompleteness)}
             ${renderScale('Severity', view.magnitude.severityScore)}
           </article>
-          <article class="gate-card ${actionBlocked ? 'locked' : ''}">
+          <article class="gate-card action-${view.magnitude.actionState} ${actionBlocked ? 'locked' : ''}">
             <span>${actionBlocked ? '[ACTION BLOCKED]' : '[REVIEW PATH]'}</span>
             <strong>${gates.items[0]}</strong>
           </article>

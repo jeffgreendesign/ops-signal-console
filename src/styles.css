@@ -16,8 +16,12 @@
   --muted: #7d725e;
   --brass: #8a6f43;
   --brass-bright: #b49a64;
+  --success: #6f9f64;
+  --success-bright: #a1c982;
   --warning: #e4a93a;
+  --warning-bright: #f4c75f;
   --danger: #a7432f;
+  --danger-bright: #d7664d;
   --line-dark: rgba(251, 244, 228, 0.18);
   --line-bone: rgba(23, 20, 15, 0.16);
 
@@ -170,16 +174,16 @@ h1, h2, h3, p { margin-top: 0; }
 h1 {
   margin-bottom: 0.75rem;
   font-size: clamp(2.2rem, 4.5vw, 4.5rem);
-  line-height: 0.88;
-  letter-spacing: -0.09em;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
 }
 
 h2 {
   max-width: 52rem;
   margin-bottom: 0.65rem;
   font-size: clamp(2rem, 5vw, 5.2rem);
-  line-height: 0.9;
-  letter-spacing: -0.075em;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
 }
 
 h3 { margin-bottom: 0.65rem; }
@@ -231,10 +235,10 @@ h3 { margin-bottom: 0.65rem; }
   content: '';
   position: absolute;
   inset: 0 auto 0 0;
-  width: 1px;
-  background: var(--brass-bright);
-  opacity: 0;
-  transform: scaleY(0.3);
+  width: 3px;
+  background: var(--risk-bright, var(--brass-bright));
+  opacity: 0.34;
+  transform: scaleY(0.64);
   transform-origin: center;
   transition:
     opacity var(--motion-medium) var(--ease-instrument),
@@ -246,7 +250,7 @@ h3 { margin-bottom: 0.65rem; }
   position: absolute;
   inset: auto 0 0 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--brass-bright) 66%, transparent), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--risk-bright, var(--brass-bright)) 66%, transparent), transparent);
   opacity: 0;
   transform: scaleX(0.2);
   transition:
@@ -255,14 +259,16 @@ h3 { margin-bottom: 0.65rem; }
 }
 
 .signal-tab:hover:not([aria-pressed='true']) {
-  border-color: color-mix(in srgb, var(--brass-bright) 46%, transparent);
+  border-color: color-mix(in srgb, var(--risk-bright, var(--brass-bright)) 54%, transparent);
   color: var(--bone-50);
 }
 
 .signal-tab[aria-pressed='true'] {
-  border-color: var(--brass-bright);
-  background: #2a2419;
-  box-shadow: inset 4px 0 0 var(--brass-bright), 0 10px 28px rgba(0,0,0,0.18);
+  border-color: var(--risk-bright, var(--brass-bright));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--risk-color, var(--brass)) 20%, transparent), transparent 58%),
+    #2a2419;
+  box-shadow: inset 4px 0 0 var(--risk-bright, var(--brass-bright)), 0 10px 28px rgba(0,0,0,0.18);
 }
 
 .signal-tab[aria-pressed='true']::before {
@@ -281,19 +287,38 @@ h3 { margin-bottom: 0.65rem; }
   outline-offset: 3px;
 }
 
+.signal-high,
+.signal-hero-high {
+  --risk-color: var(--danger);
+  --risk-bright: var(--danger-bright);
+}
+
+.signal-medium,
+.signal-hero-medium {
+  --risk-color: var(--warning);
+  --risk-bright: var(--warning-bright);
+}
+
+.signal-low,
+.signal-hero-low {
+  --risk-color: var(--success);
+  --risk-bright: var(--success-bright);
+}
+
 .signal-high .tab-score,
-.signal-hero-high .signal-score-block {
-  border-color: color-mix(in srgb, var(--danger) 78%, transparent);
-}
-
 .signal-medium .tab-score,
-.signal-hero-medium .signal-score-block {
-  border-color: color-mix(in srgb, var(--warning) 72%, transparent);
+.signal-low .tab-score,
+.signal-hero-high .signal-score-block,
+.signal-hero-medium .signal-score-block,
+.signal-hero-low .signal-score-block {
+  border-color: color-mix(in srgb, var(--risk-bright) 78%, transparent);
 }
 
-.signal-low .tab-score,
-.signal-hero-low .signal-score-block {
-  border-color: rgba(125, 114, 94, 0.72);
+.signal-high .tab-score,
+.signal-medium .tab-score,
+.signal-low .tab-score {
+  background: color-mix(in srgb, var(--risk-color) 16%, transparent);
+  color: var(--risk-bright);
 }
 
 .tab-score {
@@ -341,10 +366,11 @@ h3 { margin-bottom: 0.65rem; }
   display: grid;
   align-content: center;
   justify-items: center;
-  border-right: 1px solid var(--line-dark);
+  border-right: 1px solid var(--risk-bright, var(--line-dark));
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--brass) 8%, transparent), transparent),
+    linear-gradient(180deg, color-mix(in srgb, var(--risk-color, var(--brass)) 14%, transparent), transparent),
     var(--graphite-800);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--risk-bright, var(--brass-bright)) 22%, transparent);
   animation: score-calibrate 780ms var(--ease-signal-hold) 180ms both;
 }
 
@@ -354,7 +380,7 @@ h3 { margin-bottom: 0.65rem; }
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, transparent 0 34%, color-mix(in srgb, var(--brass-bright) 12%, transparent) 48%, transparent 62%);
+    linear-gradient(90deg, transparent 0 34%, color-mix(in srgb, var(--risk-bright, var(--brass-bright)) 16%, transparent) 48%, transparent 62%);
   mix-blend-mode: screen;
   animation: instrument-sweep 3.8s var(--ease-signal-hold) 1.2s infinite;
 }
@@ -364,7 +390,7 @@ h3 { margin-bottom: 0.65rem; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--brass-bright) 16%, transparent), transparent);
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--risk-bright, var(--brass-bright)) 20%, transparent), transparent);
   animation: score-scan 960ms var(--ease-instrument) 120ms both;
 }
 
@@ -413,6 +439,27 @@ h3 { margin-bottom: 0.65rem; }
 .hero-tags span {
   border: 1px solid color-mix(in srgb, var(--brass) 45%, transparent);
   padding: 0.35rem 0.5rem;
+}
+
+.hero-tags .risk-tag {
+  border-color: color-mix(in srgb, var(--risk-bright, var(--brass-bright)) 72%, transparent);
+  background: color-mix(in srgb, var(--risk-color, var(--brass)) 14%, transparent);
+  color: var(--risk-bright, var(--brass-bright));
+}
+
+.action-tag.action-observe {
+  border-color: color-mix(in srgb, var(--success-bright) 66%, transparent);
+  color: var(--success-bright);
+}
+
+.action-tag.action-review {
+  border-color: color-mix(in srgb, var(--warning-bright) 66%, transparent);
+  color: var(--warning-bright);
+}
+
+.action-tag.action-blocked {
+  border-color: color-mix(in srgb, var(--danger-bright) 70%, transparent);
+  color: var(--danger-bright);
 }
 
 .context-strip {
@@ -556,36 +603,64 @@ h3 { margin-bottom: 0.65rem; }
 .scale-track i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--brass) 76%, transparent), var(--brass));
+  background: linear-gradient(90deg, color-mix(in srgb, var(--risk-color, var(--brass)) 72%, transparent), var(--risk-bright, var(--brass)));
   transition: width var(--motion-slow) var(--ease-instrument);
 }
 
 .gate-card {
+  position: relative;
   display: grid;
   align-content: center;
   gap: 0.8rem;
-  background: #1a1711;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--action-color, var(--warning)) 16%, transparent), transparent 54%),
+    #1a1711;
   color: var(--bone-100);
-  border-color: color-mix(in srgb, var(--warning) 46%, transparent);
-  box-shadow: inset 0 -6px 0 var(--warning), 0 18px 48px rgba(0,0,0,0.24);
+  border-color: color-mix(in srgb, var(--action-bright, var(--warning-bright)) 54%, transparent);
+  box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+}
+
+.gate-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--action-bright, var(--warning-bright));
+}
+
+.gate-card.action-observe {
+  --action-color: var(--success);
+  --action-bright: var(--success-bright);
+}
+
+.gate-card.action-review {
+  --action-color: var(--warning);
+  --action-bright: var(--warning-bright);
+}
+
+.gate-card.action-blocked,
+.gate-card.locked {
+  --action-color: var(--danger);
+  --action-bright: var(--danger-bright);
 }
 
 .gate-card.locked {
-  border-color: color-mix(in srgb, var(--danger) 80%, transparent);
+  border-color: color-mix(in srgb, var(--action-bright) 80%, transparent);
   background:
-    repeating-linear-gradient(180deg, color-mix(in srgb, var(--danger) 9%, transparent) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(180deg, color-mix(in srgb, var(--action-color) 10%, transparent) 0 1px, transparent 1px 9px),
+    linear-gradient(90deg, color-mix(in srgb, var(--action-color) 20%, transparent), transparent 54%),
     #1a1711;
-  box-shadow: inset 0 -6px 0 var(--danger), 0 18px 48px rgba(0,0,0,0.24);
   animation: gate-held 1800ms var(--ease-signal-hold) infinite;
 }
 
-.gate-card span { color: var(--brass-bright); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem; }
+.gate-card span { color: var(--action-bright, var(--brass-bright)); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem; }
 .gate-card strong { line-height: 1.35; }
 
 .evidence-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: start;
+  align-items: stretch;
   gap: 1rem;
 }
 
@@ -596,9 +671,9 @@ h3 { margin-bottom: 0.65rem; }
 }
 
 .evidence-plate.facts { animation-delay: calc(var(--motion-stagger) * 1); }
-.evidence-plate.inference { margin-top: 2rem; animation-delay: calc(var(--motion-stagger) * 2); }
-.evidence-plate.gaps { margin-top: 4rem; border-style: dashed; background: #eadbbb; animation-delay: calc(var(--motion-stagger) * 3); }
-.evidence-plate.gates { margin-top: 1rem; background: #1a1711; color: var(--bone-100); border-color: color-mix(in srgb, var(--brass) 45%, transparent); animation-delay: calc(var(--motion-stagger) * 4); }
+.evidence-plate.inference { animation-delay: calc(var(--motion-stagger) * 2); }
+.evidence-plate.gaps { border-style: dashed; background: #eadbbb; animation-delay: calc(var(--motion-stagger) * 3); }
+.evidence-plate.gates { background: #1a1711; color: var(--bone-100); border-color: color-mix(in srgb, var(--brass) 45%, transparent); animation-delay: calc(var(--motion-stagger) * 4); }
 
 .plate-topline {
   display: flex;
@@ -704,6 +779,9 @@ h3 { margin-bottom: 0.65rem; }
 @media (max-width: 920px) {
   .shell { grid-template-columns: 1fr; }
   .operator-rail { position: relative; height: auto; border-right: 0; border-bottom: 1px solid var(--line-dark); }
+  h1, h2 { letter-spacing: -0.02em; }
+  h1 { line-height: 0.95; }
+  h2 { line-height: 0.98; }
   .signal-tabs { grid-template-columns: 1fr; }
   .signal-hero { grid-template-columns: 1fr; min-height: auto; }
   .signal-score-block { min-height: 10rem; border-right: 0; border-bottom: 1px solid var(--line-dark); }

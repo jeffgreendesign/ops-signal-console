@@ -203,7 +203,7 @@ export const scenarios: Scenario[] = [
       'Models uncertainty without forcing a false resolution',
       'Makes low-confidence review paths visible and bounded'
     ],
-    risk: 'medium',
+    risk: 'low',
     confidence: 'low',
     severityScore: 42,
     blastRadius: 'local',
