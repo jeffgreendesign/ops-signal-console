@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { executeReceiptAction } from '../src/model/receipts';
+import { createReceiptShape, executeReceiptAction } from '../src/model/receipts';
 import type { GatedAction, SignalScenario } from '../src/model/types';
 
 const baseActions: GatedAction[] = [
@@ -129,6 +129,31 @@ describe('typed decision receipts', () => {
       ok: false,
       gateStatus: 'blockedByPolicy',
       blockedReasons: ['Only internal mock actions can create local receipts in this demo.'],
+    });
+  });
+
+  it('prevents the shape helper from bypassing receipt policy', () => {
+    expect(() => createReceiptShape(scenario, action('public-note'), 'available')).toThrow('Only internal mock actions can create local receipts in this demo.');
+    expect(() => createReceiptShape(scenario, action('hold-review'), 'needsEvidence')).toThrow('Only available actions can create local receipts.');
+  });
+
+  it('marks a successfully executed action so the next gate status is no longer available', () => {
+    const firstResult = executeReceiptAction(scenario, action('inspect-internally'));
+    expect(firstResult.ok).toBe(true);
+    if (!firstResult.ok) throw new Error('expected receipt result');
+
+    const scenarioAfterExecution: SignalScenario = {
+      ...scenario,
+      gatedActions: scenario.gatedActions.map((candidate) =>
+        candidate.id === 'inspect-internally' ? { ...candidate, executionStatus: firstResult.nextGateStatus } : candidate
+      ),
+    };
+
+    const secondResult = executeReceiptAction(scenarioAfterExecution, scenarioAfterExecution.gatedActions[0]);
+    expect(secondResult).toEqual({
+      ok: false,
+      gateStatus: 'executedMock',
+      blockedReasons: ['Mock execution receipt already exists.'],
     });
   });
 });

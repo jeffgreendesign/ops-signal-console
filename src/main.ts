@@ -305,8 +305,14 @@ function renderShell(): void {
       const result = executeReceiptAction(selectedScenario, action, { createdAt: new Date().toISOString() });
       if (!result.ok) return;
 
+      selectedScenario = {
+        ...selectedScenario,
+        gatedActions: selectedScenario.gatedActions.map((candidate) =>
+          candidate.id === action.id ? { ...candidate, executionStatus: result.nextGateStatus } : candidate
+        ),
+      };
       activityTrail = [result.receipt, ...activityTrail].slice(0, 5);
-      renderActivityTrail();
+      renderShell();
     });
   });
 }
