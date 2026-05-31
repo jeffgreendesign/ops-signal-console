@@ -186,15 +186,27 @@ describe('Ops Signal Console scenario model', () => {
     expect(config).toContain('polyfill: false');
   });
 
-  it('updates mock action receipts without re-rendering the full console shell', () => {
+  it('updates mock action receipts and gate state through the typed execution helper', () => {
     const source = readProjectFile('src/main.ts');
 
     expect(source).toContain('function renderActivityTrail');
-    expect(source).toContain('renderActivityTrail();');
     expect(source).toContain('const trailPanel = document.querySelector<HTMLElement>');
+    expect(source).toContain('executeReceiptAction(selectedScenario, action');
+    expect(source).toContain('data-action-id');
+    expect(source).toContain('receipt.receiptId');
+    expect(source).toContain('receipt.scenarioId');
+    expect(source).toContain('receipt.actionId');
+    expect(source).toContain('receipt.gateStatusBefore');
+    expect(source).toContain('receipt.decisionReason');
+    expect(source).toContain('receipt.reversibility');
+    expect(source).toContain('receipt.externalSideEffects');
+    expect(source).toContain('receipt.createdAt');
 
-    const actionHandler = source.slice(source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action]')"));
-    expect(actionHandler).not.toContain('render();');
+    const actionHandlerStart = source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action-id]')");
+    expect(actionHandlerStart).toBeGreaterThanOrEqual(0);
+    const actionHandler = source.slice(actionHandlerStart);
+    expect(actionHandler).toContain('executionStatus: result.nextGateStatus');
+    expect(actionHandler).toContain('renderShell();');
   });
 
   it('keeps mobile action controls at a non-zooming touch font size', () => {

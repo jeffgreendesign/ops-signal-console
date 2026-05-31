@@ -10,7 +10,7 @@
 - `ActionState`: `observe`, `review`, or `blocked`.
 - `GatedAction`: internal/channel/public action candidate with evidence and approval requirements.
 - `GateStatus`: `available`, `needsEvidence`, `needsHumanApproval`, `blockedByPolicy`, `executedMock`, or `rolledBackMock`.
-- `DecisionReceipt`: no-side-effect receipt shape for later mock execution.
+- `DecisionReceipt`: typed no-side-effect receipt for allowed local/internal mock execution.
 
 ## Pure functions
 
@@ -22,5 +22,6 @@
 - `deriveBlockedActions(scenario)`
 - `deriveAllowedInternalActions(scenario)`
 - `buildDisplayModel(scenario)`
+- `executeReceiptAction(scenario, action)`
 
-The UI should consume `buildDisplayModel` instead of duplicating model logic.
+Receipt execution returns a typed success or blocked result. Only available internal actions create in-memory receipts, and every receipt records `externalSideEffects: none`. Public/channel actions and actions missing evidence or human approval do not create receipts.

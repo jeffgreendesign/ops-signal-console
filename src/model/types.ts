@@ -42,6 +42,7 @@ export interface GatedAction {
   requiredEvidence: string[];
   approved?: boolean;
   policyBlocked?: boolean;
+  executionStatus?: Extract<GateStatus, 'executedMock' | 'rolledBackMock'>;
 }
 
 export interface SignalScenario {

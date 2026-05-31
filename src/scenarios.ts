@@ -23,6 +23,7 @@ export interface ConsoleLane {
 }
 
 export interface ConsoleAction {
+  id: string;
   label: string;
   actionType: 'internal' | 'channel' | 'public';
   gateStatus: GateStatus;
@@ -120,11 +121,13 @@ export function buildConsoleView(scenario: Scenario): ConsoleView {
     nextChecks: display.recommendedChecks,
     actions: [
       ...display.allowedInternalActions.map((action) => ({
+        id: action.id,
         label: action.label,
         actionType: action.actionType,
         gateStatus: action.gateStatus,
       })),
       ...display.blockedActions.map((action) => ({
+        id: action.id,
         label: action.label,
         actionType: action.actionType,
         gateStatus: action.gateStatus,
