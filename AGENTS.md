@@ -2,6 +2,10 @@
 
 Build behavior first. Keep it public-safe.
 
+## Active plan
+
+Read `docs/master-plan.md` before continuing numbered phases. It is the authoritative phase map and live-state reset. Treat `docs/plans/*` as reference-only handoffs unless the master plan marks one active.
+
 ## Project frame
 
 Ops Signal Console is a synthetic portfolio signal triage prototype for a house-of-brands operator launching multiple invented verticals. It demonstrates cross-brand signal consolidation, evidence/proof warnings, uncertainty, and human approval gates before action.

@@ -17,7 +17,7 @@ Current artifact:
 - Synthetic AI-assisted ops/signal triage console.
 - Strong visual identity: graphite field, bone evidence plates, amber review gates.
 
-Target reframe:
+Launch reframe:
 - Public-facing naming can remain `Ops Signal Console` for now unless renamed deliberately.
 - The concept should read as a cross-brand judgment layer for fast-moving consumer/product portfolios.
 
