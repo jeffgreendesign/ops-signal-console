@@ -149,7 +149,7 @@ function renderActionButton(action: ReturnType<typeof buildConsoleView>['actions
     ? `disabled aria-disabled="true" title="${escapeHtml(action.disabledReason ?? 'Blocked until review clears.') }"`
     : '';
   const statusLabel = action.disabled ? 'Blocked' : 'Available';
-  const gateLabel = action.gateStatus.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
+  const gateLabel = action.gateStatus.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`).trim();
 
   return `
     <button class="action-button action-${action.gateStatus} ${action.disabled ? 'is-blocked' : 'is-available'}" data-action-id="${escapeHtml(action.id)}" ${disabledAttributes}>
