@@ -342,7 +342,54 @@ npm run scan:public-safety
 git diff --check
 ```
 
-### Phase R5 — Optional preview / PR / deployment lifecycle
+### Phase R5 — Opportunity signal scenario
+
+**Status:** active / next.
+**Goal:** Add one positive/upside signal that proves the console can detect opportunity without prematurely recommending external action.
+**Stop condition:** A synthetic opportunity scenario renders through the deterministic model/UI adapter, distinguishes upside from proof/readiness, and keeps public/channel actions gated until evidence and human approval clear.
+
+Rules:
+
+- Frame the scenario as **promising but not proven**, not celebratory green status.
+- Do not make green mean “good news”; preserve green primarily for available/internal action readiness.
+- Do not add generic SaaS/growth-dashboard motifs or decorative optimism.
+- Do not change the deterministic scoring model just to make the opportunity look positive.
+- Keep scenario data synthetic/public-safe with invented brands, surfaces, sources, checks, and proof gaps.
+- Preserve typed receipts, public-safety scanner coverage, and no-side-effect action boundaries.
+
+Suggested scenario shape:
+
+- Title direction: “Promising channel lift needs independent proof” or equivalent.
+- Kind direction: `opportunitySignal` / `positiveSignal` only if the type/model change is minimal and tested.
+- Known facts: early synthetic lift or quality signal, bounded source, one repeat/independent proof missing.
+- Inferred risks: amplification risk, sample bias, or premature expansion risk.
+- Evidence gaps: independent proof, repeat window, or readiness threshold.
+- Actions:
+  - Available internal action: log/review opportunity packet.
+  - Gated channel/public actions: expand/amplify only after proof and human approval.
+
+Acceptance criteria:
+
+- [ ] Add or update tests before implementation for the opportunity scenario.
+- [ ] Scenario appears in the UI via the existing adapter path.
+- [ ] Opportunity/upside copy is visible without implying proof or production readiness.
+- [ ] Severity/risk remains separate from opportunity size or upside potential.
+- [ ] Evidence gaps still lower confidence/evidence completeness.
+- [ ] Public/channel actions remain disabled or approval-gated until proof clears.
+- [ ] Available internal action can create only a typed local mock receipt.
+- [ ] Public-safety scanner still passes over source, docs, tests, scenarios, and built assets.
+
+Verification:
+
+```bash
+npm test
+npm run typecheck
+npm run build
+npm run scan:public-safety
+git diff --check
+```
+
+### Phase R6 — Optional preview / PR / deployment lifecycle
 
 **Status:** blocked on Jeff approval.  
 **Goal:** Make a reviewable preview or PR only when explicitly requested.  
@@ -369,11 +416,11 @@ Before PR/push:
 
 ## 6. Recommended next action
 
-Phase R4 is complete. Remaining next phase is **Phase R5 — Optional preview / PR / deployment lifecycle**, blocked on Jeff approval:
+Do **Phase R5 — Opportunity signal scenario** next:
 
-- Create a preview only when explicitly requested.
-- Push/open a PR only when explicitly requested.
-- Do not merge without Jeff explicitly saying `merge`.
+- Add one synthetic positive/upside signal framed as promising but not proven.
+- Preserve semantic risk/gate colors and deterministic model boundaries.
+- Keep public/channel actions gated; only internal mock receipt actions may execute locally.
 
 ---
 
