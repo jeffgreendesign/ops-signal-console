@@ -38,6 +38,7 @@ export interface GatedAction {
   label: string;
   actionType: 'internal' | 'channel' | 'public';
   requiresHumanApproval: boolean;
+  /** EvidenceGap.label strings required before this action can clear its gate. */
   requiredEvidence: string[];
   approved?: boolean;
   policyBlocked?: boolean;
@@ -90,6 +91,11 @@ export interface DisplayModel {
   inferredRisks: InferredRisk[];
   evidenceGaps: EvidenceGap[];
   recommendedChecks: string[];
+  proofSummary: {
+    posture: string;
+    blockedBecause: string[];
+    gapToActionMap: string[];
+  };
   allowedInternalActions: GatedActionDisplay[];
   blockedActions: GatedActionDisplay[];
 }

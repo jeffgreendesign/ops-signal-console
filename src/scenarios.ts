@@ -42,6 +42,7 @@ export interface ConsoleView {
     controlPattern: string;
     reviewerSignals: string[];
   };
+  proofSummary: ReturnType<typeof buildDisplayModel>['proofSummary'];
   lanes: ConsoleLane[];
   nextChecks: string[];
   actions: ConsoleAction[];
@@ -104,6 +105,7 @@ export function buildConsoleView(scenario: Scenario): ConsoleView {
       actionState,
     },
     decisionFrame: decisionCopy(scenario),
+    proofSummary: display.proofSummary,
     lanes: [
       { label: 'Known facts', items: display.knownFacts.map((fact) => `${fact.label}: ${fact.detail}`) },
       { label: 'Inferred risks', items: display.inferredRisks.map((risk) => `${risk.label}: ${risk.rationale}`) },
