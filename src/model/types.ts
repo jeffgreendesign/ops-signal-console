@@ -9,6 +9,7 @@ export type ScenarioKind =
   | 'retailAllocationPressure'
   | 'channelMismatch'
   | 'launchReadinessMismatch'
+  | 'opportunitySignal'
   | 'ingredientConstraint';
 
 export interface EvidenceItem {

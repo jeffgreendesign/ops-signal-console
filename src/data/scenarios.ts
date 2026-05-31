@@ -133,4 +133,37 @@ export const scenarios: SignalScenario[] = [
       { id: 'amplify-readiness-note', label: 'Amplify readiness note', actionType: 'public', requiresHumanApproval: true, requiredEvidence: ['readiness-threshold-proof'] },
     ],
   },
+  {
+    id: 'scenario-promising-channel-lift',
+    title: 'Promising channel lift needs independent proof',
+    kind: 'opportunitySignal',
+    sourceLabel: 'synthetic channel lift review',
+    observedAt: '2026-05-30T14:00:00.000Z',
+    affectedBrands: ['Brand Fern'],
+    affectedSurfaces: ['channel lift packet', 'opportunity review'],
+    signalMagnitude: 72,
+    knownFacts: [
+      { id: 'fact-early-lift', label: 'promising channel lift observed', strength: 'observed', detail: 'A synthetic review packet shows early lift in one bounded channel window.' },
+      { id: 'fact-bounded-window', label: 'bounded channel window', strength: 'observed', detail: 'The signal is limited to one invented surface and one review interval.' },
+      { id: 'fact-proof-not-complete', label: 'opportunity not proven', strength: 'derived', detail: 'The packet frames upside as a review candidate, not a supported expansion decision.' },
+    ],
+    inferredRisks: [
+      { id: 'risk-premature-expansion', label: 'premature expansion risk', riskLevel: 'high', rationale: 'Early upside could be amplified before independent proof confirms the lift.' },
+      { id: 'risk-sample-bias', label: 'sample bias risk', riskLevel: 'medium', rationale: 'One synthetic channel window may overstate readiness for broader action.' },
+    ],
+    evidenceGaps: [
+      { id: 'gap-independent-proof', label: 'independent-proof', requiredFor: ['expand-channel-test', 'publish-opportunity-note'], severityImpact: 'none', confidenceImpact: 55 },
+      { id: 'gap-repeat-window', label: 'repeat-window-proof', requiredFor: ['expand-channel-test'], severityImpact: 'none', confidenceImpact: 25 },
+    ],
+    recommendedChecks: [
+      'Confirm the lift with an independent synthetic proof field.',
+      'Wait for a repeat window before recommending expansion.',
+      'Keep opportunity language internal until proof and human approval clear.',
+    ],
+    gatedActions: [
+      { id: 'log-opportunity-packet', label: 'Log opportunity review packet', actionType: 'internal', requiresHumanApproval: false, requiredEvidence: [] },
+      { id: 'expand-channel-test', label: 'Expand channel test', actionType: 'channel', requiresHumanApproval: true, requiredEvidence: ['independent-proof', 'repeat-window-proof'] },
+      { id: 'publish-opportunity-note', label: 'Publish opportunity note', actionType: 'public', requiresHumanApproval: true, requiredEvidence: ['independent-proof'] },
+    ],
+  },
 ];

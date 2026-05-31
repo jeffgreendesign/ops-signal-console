@@ -44,6 +44,16 @@ Synthetic surfaces:
 - allocation review
 - field guidance
 
+## Promising channel lift needs independent proof
+
+Purpose: show opportunity signals can be promising without being proven, while severity/risk, confidence, evidence gaps, and public/channel gates stay separate from upside potential.
+
+Synthetic surfaces:
+
+- Brand Fern
+- channel lift packet
+- opportunity review
+
 ## Scenario rules
 
 Every scenario should include known facts, inferred risks, evidence gaps, recommended checks, and gated actions. Future scenarios should remain invented and non-identifying.

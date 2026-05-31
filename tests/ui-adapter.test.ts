@@ -132,6 +132,33 @@ describe('Phase 3 UI adapter', () => {
     expect(display.proofSummary.gapToActionMap.join(' ')).not.toContain('orphan-proof-gap');
   });
 
+  it('renders the opportunity signal as promising but not proven through the deterministic adapter', () => {
+    const opportunity = findRawScenario('opportunitySignal');
+    const display = buildDisplayModel(opportunity);
+    const view = buildConsoleView(opportunity);
+    const text = flatten(view);
+
+    expect(opportunity.title).toBe('Promising channel lift needs independent proof');
+    expect(text).toContain('promising channel lift');
+    expect(text).toContain('not proven');
+    expect(text).toContain('independent-proof');
+    expect(text).toContain('repeat-window-proof');
+    expect(display.severity.score).toBe(80);
+    expect(display.severity.label).toBe('high');
+    expect(display.confidence.score).toBeLessThan(45);
+    expect(display.evidenceCompleteness.label).toBe('partial');
+    expect(view.actions.filter((action) => !action.disabled).map((action) => action.label)).toEqual([
+      'Log opportunity review packet',
+    ]);
+    expect(view.actions.filter((action) => action.disabled).map((action) => ({ label: action.label, status: action.gateStatus }))).toEqual([
+      { label: 'Expand channel test', status: 'needsEvidence' },
+      { label: 'Publish opportunity note', status: 'needsEvidence' },
+    ]);
+    expect(text).not.toContain('good news');
+    expect(text).not.toContain('proven demand');
+    expect(text).not.toContain('ready to scale');
+  });
+
   it('keeps UI-facing output public-safe and blocks non-internal actions with safe reasons', () => {
     for (const scenario of uiScenarios) {
       const view = buildConsoleView(scenario);
