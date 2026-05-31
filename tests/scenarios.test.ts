@@ -2,41 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildConsoleView, scenarios } from '../src/scenarios';
-
-const term = (parts: string[]): string => parts.join('');
-const phrase = (...parts: string[]): string => parts.join(' ');
-
-const forbiddenPublicArtifactTerms = [
-  term(['da', 'vid']),
-  term(['me', 'dici']),
-  term(['pro', 'tein']),
-  term(['e', 'pg']),
-  term(['epo', 'gee']),
-  phrase(term(['pe', 'ter']), term(['ra', 'hal'])),
-  phrase(term(['ju', 'lia']), term(['fo', 'x'])),
-  term(['shop', 'ify']),
-  term(['check', 'out']),
-  term(['ca', 'rt']),
-  term(['or', 'der']),
-  term(['pay', 'ment']),
-  term(['cus', 'tomer']),
-  term(['mer', 'chant']),
-  term(['store', 'front']),
-  term(['p', 'dp']),
-  term(['au', 'th']),
-  term(['ac', 'count']),
-  term(['cre', 'dential']),
-  term(['tele', 'gram']),
-  term(['her', 'mes']),
-  term(['u', 'cp']),
-  term(['m', 'cp']),
-  term(['a', 'cp']),
-  term(['com', 'merce']),
-  term(['tick', 'et']),
-  term(['inci', 'dent']),
-  phrase(term(['pri', 'vate']), term(['lo', 'g'])),
-  phrase(term(['per', 'sonal']), term(['pur', 'chase']))
-];
+import { forbiddenPublicArtifactTerms } from './public-safety-terms';
 
 const publicArtifactPaths = ['src', 'README.md', 'AGENTS.md', 'docs', 'index.html', 'package.json', 'vite.config.ts'];
 
@@ -99,7 +65,7 @@ describe('Ops Signal Console scenario model', () => {
   it('keeps public source artifacts free of forbidden terms outside local planning and banned-list test fixtures', () => {
     const artifactText = publicArtifactPaths
       .flatMap(collectTextFiles)
-      .filter((path) => !path.endsWith('tests/scenarios.test.ts'))
+      .filter((path) => !path.startsWith('tests/'))
       .filter((path) => !path.startsWith('docs/plans/'))
       .map((path) => readProjectFile(path).toLowerCase())
       .join('\n');

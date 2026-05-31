@@ -1,45 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { scenarios } from '../src/data/scenarios';
 import { buildDisplayModel } from '../src/model/scoring';
-
-const forbiddenTerms = [
-  'http://',
-  'https://',
-  'www.',
-  'shopify',
-  'amazon',
-  'walmart',
-  'target',
-  'costco',
-  'tiktok',
-  'instagram',
-  'twitter',
-  'x.com',
-  'linkedin',
-  'stripe',
-  'auth0',
-  'openai',
-  'anthropic',
-  'gemini',
-  'slack',
-  'jira',
-  'zendesk',
-  'salesforce',
-  'ticket',
-  'incident',
-  'customer',
-  'merchant',
-  'checkout',
-  'cart',
-  'payment',
-  'order',
-  'account',
-  'credential',
-  'endpoint',
-  'api/',
-  'founder',
-  'ceo',
-];
+import { forbiddenPublicArtifactTerms } from './public-safety-terms';
 
 const textForScenario = (scenario: (typeof scenarios)[number]): string =>
   JSON.stringify(scenario).toLowerCase();
@@ -84,7 +46,7 @@ describe('phase 2 high-proof synthetic scenarios', () => {
   it('keeps deterministic scenario fixtures free of live URLs and source-identifying terms', () => {
     for (const scenario of scenarios) {
       const text = textForScenario(scenario);
-      for (const term of forbiddenTerms) {
+      for (const term of forbiddenPublicArtifactTerms) {
         expect(text).not.toContain(term);
       }
     }
@@ -102,6 +64,18 @@ describe('phase 2 high-proof synthetic scenarios', () => {
         for (const evidence of action.requiredEvidence) {
           expect(gapLabels.has(evidence)).toBe(true);
         }
+      }
+    }
+  });
+
+  it('keeps evidence-gap requiredFor references aligned with actions that require each gap label', () => {
+    for (const scenario of scenarios) {
+      for (const gap of scenario.evidenceGaps) {
+        const actionIdsRequiringGap = scenario.gatedActions
+          .filter((action) => action.requiredEvidence.includes(gap.label))
+          .map((action) => action.id);
+
+        expect([...gap.requiredFor].sort()).toEqual([...actionIdsRequiringGap].sort());
       }
     }
   });

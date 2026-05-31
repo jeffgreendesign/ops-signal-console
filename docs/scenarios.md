@@ -20,6 +20,29 @@ Synthetic surfaces:
 
 - Brand Beacon
 - draft channel note
+- review copy deck
+
+## Channel feedback cluster does not prove sustained demand
+
+Purpose: show a high-chatter single-source cluster cannot be treated as broad or sustained demand without independent proof.
+
+Synthetic surfaces:
+
+- Brand Cedar
+- channel feedback cluster
+- planning note
+
+## New format readiness mismatch blocks expansion
+
+Purpose: show expansion stays blocked when readiness threshold proof and format proof are missing.
+
+Synthetic surfaces:
+
+- Brand Drift
+- Brand Ember
+- new format readiness
+- allocation review
+- field guidance
 
 ## Scenario rules
 

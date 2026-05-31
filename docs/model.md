@@ -9,7 +9,7 @@
 - `BlastRadius`: `local`, `surface`, `system`, or `portfolio`.
 - `ActionState`: `observe`, `review`, or `blocked`.
 - `GatedAction`: internal/channel/public action candidate with evidence and approval requirements.
-- `GateStatus`: available, evidence-needed, approval-needed, policy-blocked, or mock execution states.
+- `GateStatus`: `available`, `needsEvidence`, `needsHumanApproval`, `blockedByPolicy`, `executedMock`, or `rolledBackMock`.
 - `DecisionReceipt`: no-side-effect receipt shape for later mock execution.
 
 ## Pure functions

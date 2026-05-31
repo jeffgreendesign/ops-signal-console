@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { scenarios as rawScenarios } from '../src/data/scenarios';
 import { buildDisplayModel } from '../src/model/scoring';
 import { buildConsoleView, scenarios as uiScenarios } from '../src/scenarios';
+import { forbiddenPublicArtifactTerms } from './public-safety-terms';
 
 const scenarioSource = readFileSync(new URL('../src/scenarios.ts', import.meta.url), 'utf8');
 const flatten = (value: unknown): string => JSON.stringify(value).toLowerCase();
@@ -11,23 +12,6 @@ const findRawScenario = (kind: (typeof rawScenarios)[number]['kind']) => {
   expect(scenario).toBeDefined();
   return scenario!;
 };
-
-const forbiddenTerms = [
-  'http://',
-  'https://',
-  'shopify',
-  'checkout',
-  'cart',
-  'payment',
-  'order',
-  'account',
-  'credential',
-  'endpoint',
-  'incident',
-  'ticket',
-  'customer',
-  'merchant',
-];
 
 describe('Phase 3 UI adapter', () => {
   it('uses deterministic scenarios as the UI-facing scenario source', () => {
@@ -115,7 +99,7 @@ describe('Phase 3 UI adapter', () => {
       const view = buildConsoleView(scenario);
       const text = flatten(view);
 
-      for (const term of forbiddenTerms) {
+      for (const term of forbiddenPublicArtifactTerms) {
         expect(text).not.toContain(term);
       }
 

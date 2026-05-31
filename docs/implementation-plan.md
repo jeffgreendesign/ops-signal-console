@@ -16,7 +16,7 @@ Build a public-safe synthetic portfolio artifact that demonstrates:
 
 Use invented brands, invented signals, invented sources, invented surfaces, invented lots, invented regions, and invented scenario data only.
 
-Do not include real people, real organizations, source-identifiable examples, exact public phrases, private labels, screenshots, logs, route maps, endpoint names, identifiers, operational traces, live integrations, networked feeds, persistence, sign-in, public alerts, external writes, or production actions.
+Do not include real people, real organizations, source-identifiable examples, exact public phrases, private labels, screenshots, logs, route maps, service path names, identifiers, operational traces, live integrations, networked feeds, persistence, sign-in, public alerts, external writes, or production actions.
 
 ## Phase 0 — Project setup and context lock
 

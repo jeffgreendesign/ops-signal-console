@@ -20,7 +20,7 @@ export const scenarios: SignalScenario[] = [
       { id: 'risk-premature-hold', label: 'premature hold risk', riskLevel: 'medium', rationale: 'A hold recommendation could overstate a thin synthetic sample packet.' },
     ],
     evidenceGaps: [
-      { id: 'gap-confirming-sample', label: 'confirming-sample-proof', requiredFor: ['quality-hold-review'], severityImpact: 'none', confidenceImpact: 30 },
+      { id: 'gap-confirming-sample', label: 'confirming-sample-proof', requiredFor: ['quality-hold-review', 'public-quality-update'], severityImpact: 'none', confidenceImpact: 30 },
       { id: 'gap-handling-window', label: 'handling-window-proof', requiredFor: ['quality-hold-review'], severityImpact: 'none', confidenceImpact: 12 },
     ],
     recommendedChecks: [

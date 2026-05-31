@@ -1,10 +1,12 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const roots = ['src', 'tests', 'docs', 'README.md', 'AGENTS.md'];
 const bannedSourceApis = ['fetch(', 'XMLHttpRequest', 'localStorage', 'sessionStorage', 'indexedDB', 'sendBeacon'];
 
 function collect(path) {
+  if (!existsSync(path)) return [];
+
   const stat = statSync(path);
   if (stat.isDirectory()) return readdirSync(path).flatMap((entry) => collect(join(path, entry)));
   return /\.(ts|tsx|js|mjs|md|html|css|json)$/.test(path) ? [path] : [];
