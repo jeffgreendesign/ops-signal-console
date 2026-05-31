@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createReceiptShape, executeReceiptAction } from '../src/model/receipts';
+import { buildDisplayModel } from '../src/model/scoring';
 import type { GatedAction, SignalScenario } from '../src/model/types';
+import { forbiddenPublicArtifactTerms } from './public-safety-terms';
 
 const baseActions: GatedAction[] = [
   {
@@ -78,6 +80,13 @@ const action = (id: string): GatedAction => {
   return found!;
 };
 
+const scenarioWithExecutedAction = (actionId: string): SignalScenario => ({
+  ...scenario,
+  gatedActions: scenario.gatedActions.map((candidate) =>
+    candidate.id === actionId ? { ...candidate, executionStatus: 'executedMock' } : candidate
+  ),
+});
+
 describe('typed decision receipts', () => {
   it('creates exactly one typed receipt for an allowed internal action', () => {
     const result = executeReceiptAction(scenario, action('inspect-internally'), {
@@ -137,23 +146,25 @@ describe('typed decision receipts', () => {
     expect(() => createReceiptShape(scenario, action('hold-review'), 'needsEvidence')).toThrow('Only available actions can create local receipts.');
   });
 
-  it('marks a successfully executed action so the next gate status is no longer available', () => {
-    const firstResult = executeReceiptAction(scenario, action('inspect-internally'));
-    expect(firstResult.ok).toBe(true);
-    if (!firstResult.ok) throw new Error('expected receipt result');
+  it('marks executed receipts in the display model without leaving the action available', () => {
+    const display = buildDisplayModel(scenarioWithExecutedAction('inspect-internally'));
 
-    const scenarioAfterExecution: SignalScenario = {
-      ...scenario,
-      gatedActions: scenario.gatedActions.map((candidate) =>
-        candidate.id === 'inspect-internally' ? { ...candidate, executionStatus: firstResult.nextGateStatus } : candidate
-      ),
-    };
+    expect(display.allowedInternalActions.map((candidate) => candidate.id)).not.toContain('inspect-internally');
+    expect(display.blockedActions.map((candidate) => [candidate.id, candidate.gateStatus, candidate.blockedReasons])).toContainEqual([
+      'inspect-internally',
+      'executedMock',
+      ['Mock execution receipt already exists.'],
+    ]);
+  });
 
-    const secondResult = executeReceiptAction(scenarioAfterExecution, scenarioAfterExecution.gatedActions[0]);
-    expect(secondResult).toEqual({
-      ok: false,
-      gateStatus: 'executedMock',
-      blockedReasons: ['Mock execution receipt already exists.'],
-    });
+  it('keeps receipt payloads free of forbidden public artifact terms', () => {
+    const result = executeReceiptAction(scenario, action('inspect-internally'));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error('expected receipt result');
+
+    const receiptText = JSON.stringify(result.receipt).toLowerCase();
+    for (const term of forbiddenPublicArtifactTerms) {
+      expect(receiptText).not.toContain(term);
+    }
   });
 });
