@@ -90,6 +90,11 @@ export interface DisplayModel {
   inferredRisks: InferredRisk[];
   evidenceGaps: EvidenceGap[];
   recommendedChecks: string[];
+  proofSummary: {
+    posture: string;
+    blockedBecause: string[];
+    gapToActionMap: string[];
+  };
   allowedInternalActions: GatedActionDisplay[];
   blockedActions: GatedActionDisplay[];
 }

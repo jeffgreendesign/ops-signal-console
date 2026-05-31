@@ -61,10 +61,38 @@ const evidenceLabel = (score: number): 'thin' | 'partial' | 'supported' => {
 
 export { deriveActionState, deriveAllowedInternalActions, deriveBlockedActions };
 
+const buildProofSummary = (scenario: SignalScenario, blockedActions: ReturnType<typeof deriveBlockedActions>): DisplayModel['proofSummary'] => {
+  const missingEvidence = scenario.evidenceGaps.map((gap) => gap.label);
+  const needsHumanApproval = blockedActions.some((action) => action.requiresHumanApproval && !action.approved);
+  const policyBlocked = blockedActions.some((action) => action.policyBlocked);
+  const gapToActionMap = scenario.evidenceGaps.flatMap((gap) =>
+    blockedActions
+      .filter((action) => action.requiredEvidence.includes(gap.label))
+      .map((action) => `${gap.label} blocks ${action.label}`)
+  );
+
+  const blockedBecause = [
+    ...(missingEvidence.length > 0 ? [`Missing required evidence: ${missingEvidence.join(', ')}.`] : []),
+    ...(needsHumanApproval ? ['Human approval is still required for gated action.'] : []),
+    ...(policyBlocked ? ['Demo policy blocks external or irreversible action.'] : []),
+  ];
+
+  return {
+    posture:
+      blockedBecause.length > 0
+        ? 'Action remains blocked until required proof and human approval clear.'
+        : 'Internal review path is available; continue observing before wider action.',
+    blockedBecause,
+    gapToActionMap,
+  };
+};
+
 export const buildDisplayModel = (scenario: SignalScenario): DisplayModel => {
   const severityScore = calculateSeverity(scenario);
   const confidenceScore = calculateConfidence(scenario);
   const evidenceScore = calculateEvidenceCompleteness(scenario);
+  const allowedInternalActions = deriveAllowedInternalActions(scenario);
+  const blockedActions = deriveBlockedActions(scenario);
 
   return {
     scenarioId: scenario.id,
@@ -79,7 +107,8 @@ export const buildDisplayModel = (scenario: SignalScenario): DisplayModel => {
     inferredRisks: scenario.inferredRisks,
     evidenceGaps: scenario.evidenceGaps,
     recommendedChecks: scenario.recommendedChecks,
-    allowedInternalActions: deriveAllowedInternalActions(scenario),
-    blockedActions: deriveBlockedActions(scenario),
+    proofSummary: buildProofSummary(scenario, blockedActions),
+    allowedInternalActions,
+    blockedActions,
   };
 };

@@ -94,6 +94,22 @@ describe('Phase 3 UI adapter', () => {
     expect(qualityText).toContain('confirming-sample-proof');
   });
 
+  it('maps proof gaps to blocked actions through a reviewer-ready summary', () => {
+    const scenario = findRawScenario('claimsReviewBlocked');
+    const display = buildDisplayModel(scenario);
+    const view = buildConsoleView(scenario);
+
+    expect(display.proofSummary.posture).toBe('Action remains blocked until required proof and human approval clear.');
+    expect(display.proofSummary.blockedBecause).toContain('Missing required evidence: substantiation-proof, reviewer-approval-proof.');
+    expect(display.proofSummary.gapToActionMap).toEqual([
+      'substantiation-proof blocks Release channel claim',
+      'substantiation-proof blocks Publish public claim',
+      'reviewer-approval-proof blocks Release channel claim',
+      'reviewer-approval-proof blocks Publish public claim',
+    ]);
+    expect(view.proofSummary).toEqual(display.proofSummary);
+  });
+
   it('keeps UI-facing output public-safe and blocks non-internal actions with safe reasons', () => {
     for (const scenario of uiScenarios) {
       const view = buildConsoleView(scenario);

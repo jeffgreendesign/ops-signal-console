@@ -124,6 +124,22 @@ function renderDecisionFrame(view: ReturnType<typeof buildConsoleView>): string 
   `;
 }
 
+function renderProofSummary(view: ReturnType<typeof buildConsoleView>): string {
+  return `
+    <section class="proof-summary" aria-label="Proof gaps mapped to gated actions">
+      <article>
+        <p class="eyebrow">What changed / why blocked</p>
+        <strong>${escapeHtml(view.proofSummary.posture)}</strong>
+        ${renderList(view.proofSummary.blockedBecause, 'proof-gap-list')}
+      </article>
+      <article>
+        <p class="eyebrow">Proof gap → gated action</p>
+        ${renderList(view.proofSummary.gapToActionMap, 'proof-map-list')}
+      </article>
+    </section>
+  `;
+}
+
 function renderActionButton(action: { label: string; disabled?: boolean; disabledReason?: string }): string {
   const disabledAttributes = action.disabled
     ? `disabled aria-disabled="true" title="${escapeHtml(action.disabledReason ?? 'Blocked until review clears.') }"`
@@ -194,6 +210,8 @@ function renderShell(): void {
         ${renderContextStrip(view.context)}
 
         ${renderDecisionFrame(view)}
+
+        ${renderProofSummary(view)}
 
         <section class="magnitude-deck" aria-label="Signal magnitude">
           <article class="bone-card dominant">
