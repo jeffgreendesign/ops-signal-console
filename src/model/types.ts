@@ -38,6 +38,7 @@ export interface GatedAction {
   label: string;
   actionType: 'internal' | 'channel' | 'public';
   requiresHumanApproval: boolean;
+  /** EvidenceGap.label strings required before this action can clear its gate. */
   requiredEvidence: string[];
   approved?: boolean;
   policyBlocked?: boolean;

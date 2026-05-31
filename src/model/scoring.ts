@@ -62,7 +62,12 @@ const evidenceLabel = (score: number): 'thin' | 'partial' | 'supported' => {
 export { deriveActionState, deriveAllowedInternalActions, deriveBlockedActions };
 
 const buildProofSummary = (scenario: SignalScenario, blockedActions: ReturnType<typeof deriveBlockedActions>): DisplayModel['proofSummary'] => {
-  const missingEvidence = scenario.evidenceGaps.map((gap) => gap.label);
+  const blockingGapLabels = new Set(
+    scenario.evidenceGaps
+      .filter((gap) => blockedActions.some((action) => action.requiredEvidence.includes(gap.label)))
+      .map((gap) => gap.label)
+  );
+  const missingEvidence = [...blockingGapLabels];
   const needsHumanApproval = blockedActions.some((action) => action.requiresHumanApproval && !action.approved);
   const policyBlocked = blockedActions.some((action) => action.policyBlocked);
   const gapToActionMap = scenario.evidenceGaps.flatMap((gap) =>

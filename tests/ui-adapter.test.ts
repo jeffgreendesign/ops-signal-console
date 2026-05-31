@@ -110,6 +110,28 @@ describe('Phase 3 UI adapter', () => {
     expect(view.proofSummary).toEqual(display.proofSummary);
   });
 
+  it('excludes orphan evidence gaps from blocked-action proof summaries', () => {
+    const baseScenario = findRawScenario('claimsReviewBlocked');
+    const scenario = {
+      ...baseScenario,
+      evidenceGaps: [
+        ...baseScenario.evidenceGaps,
+        {
+          id: 'orphan-proof-gap',
+          label: 'orphan-proof-gap',
+          requiredFor: [],
+          severityImpact: 'low' as const,
+          confidenceImpact: 5,
+        },
+      ],
+    };
+
+    const display = buildDisplayModel(scenario);
+
+    expect(display.proofSummary.blockedBecause.join(' ')).not.toContain('orphan-proof-gap');
+    expect(display.proofSummary.gapToActionMap.join(' ')).not.toContain('orphan-proof-gap');
+  });
+
   it('keeps UI-facing output public-safe and blocks non-internal actions with safe reasons', () => {
     for (const scenario of uiScenarios) {
       const view = buildConsoleView(scenario);
