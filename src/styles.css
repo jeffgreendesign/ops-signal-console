@@ -306,15 +306,24 @@ h3 { margin-bottom: 0.65rem; }
   --risk-bright: var(--success-bright);
 }
 
+.signal-critical,
+.signal-hero-critical {
+  --risk-color: #7f1d1d;
+  --risk-bright: #ff7a5c;
+}
+
+.signal-critical .tab-score,
 .signal-high .tab-score,
 .signal-medium .tab-score,
 .signal-low .tab-score,
+.signal-hero-critical .signal-score-block,
 .signal-hero-high .signal-score-block,
 .signal-hero-medium .signal-score-block,
 .signal-hero-low .signal-score-block {
   border-color: color-mix(in srgb, var(--risk-bright) 78%, transparent);
 }
 
+.signal-critical .tab-score,
 .signal-high .tab-score,
 .signal-medium .tab-score,
 .signal-low .tab-score {
