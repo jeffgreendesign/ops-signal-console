@@ -399,6 +399,8 @@ h3 { margin-bottom: 0.65rem; }
 .score-label,
 .score-scale,
 .hero-tags,
+.mode-stack,
+.model-note,
 .context-strip,
 .plate-topline,
 .scale-label,
@@ -428,6 +430,30 @@ h3 { margin-bottom: 0.65rem; }
   min-width: 0;
   align-content: end;
   padding: clamp(1rem, 4vw, 2rem);
+}
+
+.mode-stack,
+.model-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+  color: var(--brass-bright);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mode-stack span,
+.model-note span {
+  border: 1px solid color-mix(in srgb, var(--brass) 42%, transparent);
+  background: color-mix(in srgb, var(--brass) 10%, transparent);
+  padding: 0.32rem 0.45rem;
+}
+
+.model-note {
+  margin-top: 1rem;
+  color: #d9c89f;
 }
 
 .hero-tags {
@@ -667,6 +693,27 @@ h3 { margin-bottom: 0.65rem; }
   gap: 1rem;
 }
 
+.section-kicker {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: -0.35rem;
+  color: var(--bone-100);
+}
+
+.section-kicker .eyebrow { margin-bottom: 0; }
+
+.section-kicker strong {
+  max-width: 36rem;
+  color: #d8cbb3;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: right;
+}
+
 .evidence-plate {
   min-height: 18rem;
   padding: 1rem;
@@ -709,8 +756,21 @@ h3 { margin-bottom: 0.65rem; }
 .action-console {
   display: flex;
   flex-wrap: wrap;
+  align-items: stretch;
   gap: 0.5rem;
 }
+
+.action-context {
+  flex: 1 1 20rem;
+  min-width: min(100%, 20rem);
+  border: 1px solid color-mix(in srgb, var(--brass) 34%, transparent);
+  background: #1a1711;
+  color: var(--bone-100);
+  padding: 0.8rem;
+}
+
+.action-context .eyebrow { margin-bottom: 0.35rem; }
+.action-context strong { display: block; line-height: 1.35; }
 
 .action-console button {
   border: 1px solid var(--line-dark);
@@ -803,6 +863,8 @@ h3 { margin-bottom: 0.65rem; }
   .signal-hero { grid-template-columns: 1fr; min-height: auto; }
   .signal-score-block { min-height: 10rem; border-right: 0; border-bottom: 1px solid var(--line-dark); }
   .magnitude-deck, .evidence-grid, .review-strip, .context-strip, .decision-frame { grid-template-columns: 1fr; }
+  .section-kicker { display: grid; align-items: start; }
+  .section-kicker strong { text-align: left; }
   .decision-frame article { min-height: auto; }
   .evidence-plate, .evidence-plate.inference, .evidence-plate.gaps, .evidence-plate.gates { min-height: auto; margin-top: 0; }
   .signal-copy { padding: 1rem; }

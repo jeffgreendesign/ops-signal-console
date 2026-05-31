@@ -1,5 +1,5 @@
 import './styles.css';
-import { buildConsoleView, scenarios, type BlastRadius, type ContextItem, type Scenario } from './scenarios';
+import { buildConsoleView, kindLabel, scenarios, type BlastRadius, type ContextItem, type Scenario } from './scenarios';
 
 const appRoot = document.querySelector<HTMLElement>('#app');
 
@@ -16,7 +16,7 @@ const radiusLabels: Record<BlastRadius, string> = {
   local: 'Local',
   surface: 'Surface',
   system: 'System',
-  org: 'Org'
+  portfolio: 'Portfolio'
 };
 
 function escapeHtml(value: string): string {
@@ -34,12 +34,16 @@ function escapeHtml(value: string): string {
 
 function renderScenarioButton(scenario: Scenario): string {
   const active = scenario.id === selectedScenario.id ? 'true' : 'false';
+  const view = buildConsoleView(scenario);
+  const brandLabel = scenario.affectedBrands.join(', ');
+  const surfaceLabel = scenario.affectedSurfaces.join(', ');
+
   return `
-    <button class="signal-tab signal-${scenario.risk}" data-scenario-id="${escapeHtml(scenario.id)}" aria-pressed="${active}">
-      <span class="tab-score">${scenario.severityScore}</span>
+    <button class="signal-tab signal-${view.riskBadge}" data-scenario-id="${escapeHtml(scenario.id)}" aria-pressed="${active}">
+      <span class="tab-score">${view.magnitude.severityScore}</span>
       <span class="tab-copy">
-        <strong>${escapeHtml(scenario.brand)} · ${escapeHtml(scenario.surface)}</strong>
-        <small>${escapeHtml(scenario.vertical)} · ${escapeHtml(scenario.signalType)} · ${radiusLabels[scenario.blastRadius]} radius</small>
+        <strong>${escapeHtml(brandLabel)} · ${escapeHtml(surfaceLabel)}</strong>
+        <small>${escapeHtml(kindLabel(scenario.kind))} · ${radiusLabels[view.magnitude.blastRadius ?? 'local']} radius</small>
       </span>
     </button>
   `;
@@ -59,7 +63,7 @@ function renderScale(label: string, value: number): string {
 }
 
 function renderBlastRadius(active: BlastRadius): string {
-  const steps: BlastRadius[] = ['local', 'surface', 'system', 'org'];
+  const steps: BlastRadius[] = ['local', 'surface', 'system', 'portfolio'];
   return `
     <div class="radius-ladder" aria-label="Blast radius">
       ${steps
@@ -150,6 +154,10 @@ function renderShell(): void {
         <p class="eyebrow">Synthetic portfolio console</p>
         <h1>Ops Signal Console</h1>
         <p class="lede">Portfolio launch signals across invented brands. Bone evidence plates. Amber review gates. No live systems.</p>
+        <div class="mode-stack" aria-label="Demo mode and data boundary">
+          <span>Deterministic display model</span>
+          <span>Synthetic scenarios only</span>
+        </div>
         <div class="signal-tabs">
           ${scenarios.map(renderScenarioButton).join('')}
         </div>
@@ -167,14 +175,18 @@ function renderShell(): void {
             <span class="score-scale">/100</span>
           </div>
           <div class="signal-copy">
-            <p class="eyebrow">Current signal · ${selectedScenario.timestamp}</p>
+            <p class="eyebrow">Current signal · ${escapeHtml(selectedScenario.observedAt.slice(0, 10))}</p>
             <h2>${escapeHtml(selectedScenario.title)}</h2>
-            <p>${escapeHtml(selectedScenario.summary)}</p>
+            <p>${escapeHtml(view.subheader)}</p>
+            <div class="model-note">
+              <span>Display-safe model output</span>
+              <span>Invented facts, risks, gaps, and gates</span>
+            </div>
             <div class="hero-tags">
               <span class="risk-tag">[${view.riskBadge.toUpperCase()} RISK]</span>
               <span>[${view.confidenceLabel.toUpperCase()}]</span>
               <span class="action-tag action-${view.magnitude.actionState}">[${view.magnitude.actionState.toUpperCase()}]</span>
-              <span>[${selectedScenario.signalType.toUpperCase()} SIGNAL]</span>
+              <span>[${kindLabel(selectedScenario.kind).toUpperCase()} SIGNAL]</span>
             </div>
           </div>
         </header>
@@ -195,11 +207,15 @@ function renderShell(): void {
           </article>
           <article class="gate-card action-${view.magnitude.actionState} ${actionBlocked ? 'locked' : ''}">
             <span>${actionBlocked ? '[ACTION BLOCKED]' : '[REVIEW PATH]'}</span>
-            <strong>${gates.items[0]}</strong>
+            <strong>${escapeHtml(gates.items[0] ?? 'No gated actions')}</strong>
           </article>
         </section>
 
         <section class="evidence-grid" aria-label="Evidence plates">
+          <div class="section-kicker evidence-kicker">
+            <p class="eyebrow">Evidence model</p>
+            <strong>Facts, inferences, gaps, and gates stay visually separated.</strong>
+          </div>
           ${renderLane(facts.label, facts.items, 'facts')}
           ${renderLane(inferences.label, inferences.items, 'inference')}
           ${renderLane(gaps.label, gaps.items, 'gaps')}
@@ -215,6 +231,10 @@ function renderShell(): void {
         </section>
 
         <section class="action-console" aria-label="Mock actions">
+          <div class="action-context">
+            <p class="eyebrow">Mock action boundary</p>
+            <strong>Buttons update only the local in-memory trail.</strong>
+          </div>
           ${view.actions.map(renderActionButton).join('')}
         </section>
 
@@ -231,7 +251,7 @@ function renderShell(): void {
       const next = scenarios.find((scenario) => scenario.id === button.dataset.scenarioId);
       if (!next) return;
       selectedScenario = next;
-      activityTrail = [`Switched to synthetic signal: ${next.brand} · ${next.surface}.`];
+      activityTrail = [`Switched to synthetic signal: ${next.affectedBrands.join(', ')} · ${next.affectedSurfaces.join(', ')}.`];
       renderShell();
     });
   });
@@ -240,7 +260,7 @@ function renderShell(): void {
     button.addEventListener('click', () => {
       const action = button.dataset.action ?? 'Action';
       activityTrail = [
-        `${action} selected for ${selectedScenario.brand} · ${selectedScenario.surface}. No external action was taken.`,
+        `${action} selected for ${selectedScenario.affectedBrands.join(', ')} · ${selectedScenario.affectedSurfaces.join(', ')}. No external action was taken.`,
         ...activityTrail
       ].slice(0, 5);
       renderActivityTrail();
