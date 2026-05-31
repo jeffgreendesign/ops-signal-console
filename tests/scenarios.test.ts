@@ -192,8 +192,18 @@ describe('Ops Signal Console scenario model', () => {
     expect(source).toContain('function renderActivityTrail');
     expect(source).toContain('renderActivityTrail();');
     expect(source).toContain('const trailPanel = document.querySelector<HTMLElement>');
+    expect(source).toContain('executeReceiptAction(selectedScenario, action');
+    expect(source).toContain('data-action-id');
+    expect(source).toContain('receipt.receiptId');
+    expect(source).toContain('receipt.scenarioId');
+    expect(source).toContain('receipt.actionId');
+    expect(source).toContain('receipt.gateStatusBefore');
+    expect(source).toContain('receipt.decisionReason');
+    expect(source).toContain('receipt.reversibility');
+    expect(source).toContain('receipt.externalSideEffects');
+    expect(source).toContain('receipt.createdAt');
 
-    const actionHandler = source.slice(source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action]')"));
+    const actionHandler = source.slice(source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action-id]')"));
     expect(actionHandler).not.toContain('render();');
   });
 

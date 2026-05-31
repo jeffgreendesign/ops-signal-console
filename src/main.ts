@@ -1,4 +1,6 @@
 import './styles.css';
+import { executeReceiptAction } from './model/receipts';
+import type { DecisionReceipt } from './model/types';
 import { buildConsoleView, kindLabel, scenarios, type BlastRadius, type ContextItem, type Scenario } from './scenarios';
 
 const appRoot = document.querySelector<HTMLElement>('#app');
@@ -9,8 +11,10 @@ if (!appRoot) {
 
 const app = appRoot;
 
+type ActivityTrailEntry = DecisionReceipt | { message: string };
+
 let selectedScenario = scenarios[0];
-let activityTrail: string[] = ['Console opened in synthetic portfolio demo mode.'];
+let activityTrail: ActivityTrailEntry[] = [{ message: 'Console opened in synthetic portfolio demo mode.' }];
 
 const radiusLabels: Record<BlastRadius, string> = {
   local: 'Local',
@@ -140,12 +144,31 @@ function renderProofSummary(view: ReturnType<typeof buildConsoleView>): string {
   `;
 }
 
-function renderActionButton(action: { label: string; disabled?: boolean; disabledReason?: string }): string {
+function renderActionButton(action: { id: string; label: string; disabled?: boolean; disabledReason?: string }): string {
   const disabledAttributes = action.disabled
     ? `disabled aria-disabled="true" title="${escapeHtml(action.disabledReason ?? 'Blocked until review clears.') }"`
     : '';
 
-  return `<button data-action="${escapeHtml(action.label)}" ${disabledAttributes}>${escapeHtml(action.label)}</button>`;
+  return `<button data-action-id="${escapeHtml(action.id)}" ${disabledAttributes}>${escapeHtml(action.label)}</button>`;
+}
+
+function renderReceipt(receipt: DecisionReceipt): string {
+  return `
+    <li>
+      <strong>${escapeHtml(receipt.receiptId)}</strong>
+      <span>Scenario: ${escapeHtml(receipt.scenarioId)} · Action: ${escapeHtml(receipt.actionId)}</span>
+      <span>Actor: ${escapeHtml(receipt.actor)} · Gate before: ${escapeHtml(receipt.gateStatusBefore)}</span>
+      <span>Reason: ${escapeHtml(receipt.decisionReason)}</span>
+      <span>Evidence snapshot: ${receipt.evidenceSnapshot.map((fact) => escapeHtml(fact.label)).join(', ')}</span>
+      <span>Reversibility: ${escapeHtml(receipt.reversibility)} · External side effects: ${escapeHtml(receipt.externalSideEffects)}</span>
+      <span>Created: ${escapeHtml(receipt.createdAt)}</span>
+    </li>
+  `;
+}
+
+function renderActivityEntry(entry: ActivityTrailEntry): string {
+  if ('message' in entry) return `<li>${escapeHtml(entry.message)}</li>`;
+  return renderReceipt(entry);
 }
 
 function renderActivityTrail(): void {
@@ -154,7 +177,7 @@ function renderActivityTrail(): void {
 
   trailPanel.innerHTML = `
     <p class="eyebrow">Local action trail</p>
-    ${renderList(activityTrail, 'trail-list')}
+    <ul class="plate-list trail-list">${activityTrail.map(renderActivityEntry).join('')}</ul>
   `;
 }
 
@@ -258,7 +281,7 @@ function renderShell(): void {
 
         <section class="trail-panel" data-trail-panel aria-label="Local in-memory action trail">
           <p class="eyebrow">Local action trail</p>
-          ${renderList(activityTrail, 'trail-list')}
+          <ul class="plate-list trail-list">${activityTrail.map(renderActivityEntry).join('')}</ul>
         </section>
       </section>
     </section>
@@ -269,18 +292,20 @@ function renderShell(): void {
       const next = scenarios.find((scenario) => scenario.id === button.dataset.scenarioId);
       if (!next) return;
       selectedScenario = next;
-      activityTrail = [`Switched to synthetic signal: ${next.affectedBrands.join(', ')} · ${next.affectedSurfaces.join(', ')}.`];
+      activityTrail = [{ message: `Switched to synthetic signal: ${next.affectedBrands.join(', ')} · ${next.affectedSurfaces.join(', ')}.` }];
       renderShell();
     });
   });
 
-  document.querySelectorAll<HTMLButtonElement>('[data-action]').forEach((button) => {
+  document.querySelectorAll<HTMLButtonElement>('[data-action-id]').forEach((button) => {
     button.addEventListener('click', () => {
-      const action = button.dataset.action ?? 'Action';
-      activityTrail = [
-        `${action} selected for ${selectedScenario.affectedBrands.join(', ')} · ${selectedScenario.affectedSurfaces.join(', ')}. No external action was taken.`,
-        ...activityTrail
-      ].slice(0, 5);
+      const action = selectedScenario.gatedActions.find((candidate) => candidate.id === button.dataset.actionId);
+      if (!action) return;
+
+      const result = executeReceiptAction(selectedScenario, action, { createdAt: new Date().toISOString() });
+      if (!result.ok) return;
+
+      activityTrail = [result.receipt, ...activityTrail].slice(0, 5);
       renderActivityTrail();
     });
   });
