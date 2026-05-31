@@ -49,7 +49,7 @@ export interface ConsoleView {
 
 export const scenarios = signalScenarios;
 
-const kindLabel = (kind: SignalScenario['kind']): string =>
+export const kindLabel = (kind: SignalScenario['kind']): string =>
   kind.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
 
 const formatObservedAt = (observedAt: string): string => observedAt.slice(0, 10);

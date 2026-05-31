@@ -1,5 +1,5 @@
 import './styles.css';
-import { buildConsoleView, scenarios, type BlastRadius, type ContextItem, type Scenario } from './scenarios';
+import { buildConsoleView, kindLabel, scenarios, type BlastRadius, type ContextItem, type Scenario } from './scenarios';
 
 const appRoot = document.querySelector<HTMLElement>('#app');
 
@@ -18,10 +18,6 @@ const radiusLabels: Record<BlastRadius, string> = {
   system: 'System',
   portfolio: 'Portfolio'
 };
-
-function kindLabel(kind: Scenario['kind']): string {
-  return kind.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
-}
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"]/g, (character) => {
@@ -211,7 +207,7 @@ function renderShell(): void {
           </article>
           <article class="gate-card action-${view.magnitude.actionState} ${actionBlocked ? 'locked' : ''}">
             <span>${actionBlocked ? '[ACTION BLOCKED]' : '[REVIEW PATH]'}</span>
-            <strong>${gates.items[0]}</strong>
+            <strong>${escapeHtml(gates.items[0] ?? 'No gated actions')}</strong>
           </article>
         </section>
 
