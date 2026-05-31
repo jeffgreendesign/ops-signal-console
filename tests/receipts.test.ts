@@ -150,11 +150,11 @@ describe('typed decision receipts', () => {
     const display = buildDisplayModel(scenarioWithExecutedAction('inspect-internally'));
 
     expect(display.allowedInternalActions.map((candidate) => candidate.id)).not.toContain('inspect-internally');
-    expect(display.blockedActions.map((candidate) => [candidate.id, candidate.gateStatus, candidate.blockedReasons])).toContainEqual([
-      'inspect-internally',
-      'executedMock',
-      ['Mock execution receipt already exists.'],
-    ]);
+
+    const executedAction = display.blockedActions.find((candidate) => candidate.id === 'inspect-internally');
+    expect(executedAction).toBeDefined();
+    expect(executedAction!.gateStatus).toBe('executedMock');
+    expect(executedAction!.blockedReasons).toEqual(['Mock execution receipt already exists.']);
   });
 
   it('keeps receipt payloads free of forbidden public artifact terms', () => {
