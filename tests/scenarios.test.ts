@@ -246,6 +246,15 @@ describe('Ops Signal Console scenario model', () => {
     expect(css).toContain('.signal-copy { align-content: center; padding: 1rem 1.25rem; }');
   });
 
+  it('keeps non-selected scenario card side rails full height', () => {
+    const css = readProjectFile('src/styles.css');
+    const railRule = css.slice(css.indexOf('.signal-tab::before'), css.indexOf('.signal-tab::after'));
+
+    expect(railRule).toContain('inset: 0 auto 0 0;');
+    expect(railRule).not.toContain('scaleY(0.64)');
+    expect(railRule).not.toContain('transform: scaleY');
+  });
+
   it('separates Bonefield identity accents from warning and danger state colors', () => {
     const css = readProjectFile('src/styles.css');
 
