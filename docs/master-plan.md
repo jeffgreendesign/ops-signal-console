@@ -5,7 +5,7 @@
 **Last reviewed:** 2026-05-31  
 **Repo:** project root (`ops-signal-console`)  
 **Project mode:** Fresh public-safe synthetic prototype, with extracted learnings only.  
-**Current baseline:** Working static Vite/TypeScript demo with deterministic scenarios, display model, UI adapter, visual shell, proof-gap summary, tests, and an initial public-safety scan.
+**Current baseline:** Working static Vite/TypeScript demo with deterministic scenarios, display model, UI adapter, visual shell, proof-gap summary, typed mock receipts, public-safety release gate, product proof packaging, tests, and docs.
 
 ---
 
@@ -76,9 +76,9 @@ External gates requiring Jeff approval:
 
 Commands run from the project root:
 
-- `npm test` → passed: 5 test files, 42 tests.
+- `npm test` → passed: 7 test files, 54 tests.
 - `npm run typecheck` → passed.
-- `npm run scan:public-safety` → passed: 27 files; script still reports TODO for forbidden-name and fixture leak checks.
+- `npm run scan:public-safety` → passed: source, docs, tests, scenario fixtures, and built assets are public-safe.
 - `npm run build` → passed; Vite built `dist/index.html`, CSS, and JS assets.
 - `git diff --check && git status --short` → whitespace check passed; untracked plan files remain.
 - Extra banned API scan over `src`, `docs`, `tests`, `dist`, root docs/config → findings only inside `tests/scenarios.test.ts` banned-list assertions.
@@ -98,16 +98,14 @@ Implemented:
 - UI adapter in `src/scenarios.ts` that maps deterministic model output into render shape.
 - UI shell in `src/main.ts` and visual system in `src/styles.css`.
 - Proof-gap summary in display model and UI.
-- Initial `DecisionReceipt` type and `createReceiptShape` helper.
-- In-memory local activity trail string for clicked mock actions.
-- Tests for scoring, gates, phase-2 scenarios, UI adapter, public-safety terms/API boundaries, responsive visual constraints, and proof-gap summary.
-- Initial scan script for banned source APIs.
+- `DecisionReceipt` type, `createReceiptShape` helper, and typed `executeReceiptAction` result.
+- In-memory local activity trail with typed mock receipts for allowed internal actions.
+- Tests for scoring, gates, phase-2 scenarios, UI adapter, public-safety terms/API boundaries, public-safety scanner, responsive visual constraints, proof-gap summary, and receipts.
+- Public-safety scanner covering source, docs, tests, scenario fixtures, built assets, banned APIs, forbidden terms, fixture isolation, live URLs, and live/source implication copy.
 
 Partially implemented or weak:
 
-- True Phase 4 receipts: `createReceiptShape` exists, but UI click handling currently writes activity-trail strings, not typed deterministic receipts. No dedicated receipt tests found.
-- True Phase 5 public-safety: banned API checks exist in tests and script, but scanner does not yet fully cover forbidden-term inventories, fixture isolation, docs/build assets, or built-asset network helpers as a single CI-quality command.
-- README/public docs: good summary, but not yet a full proof artifact explaining deterministic model, evidence separation, human gates, receipts, synthetic safety, architecture, and intentional absences.
+- Visual hierarchy can better foreground signal magnitude, evidence quality, proof gaps, and approval gates now that receipts and the release gate are implemented.
 - Repo planning docs: conflicting plan files caused phase drift.
 
 Not implemented / do not claim yet:
@@ -115,10 +113,7 @@ Not implemented / do not claim yet:
 - Production readiness.
 - Live integrations.
 - Public deployment.
-- Full receipt execution state machine.
 - Rollback flow.
-- Full public-safety release gate.
-- Full portfolio proof packaging.
 
 ### Drift found
 
@@ -134,7 +129,7 @@ Do not advance to old Phase 6 until the reset phases below are complete.
 
 ### Phase R0 — Plan reset and documentation hierarchy
 
-**Status:** active / next.  
+**Status:** complete.
 **Goal:** Make this master plan discoverable and stop phase-number drift.  
 **Stop condition:** Future agents start from this file and understand older handoffs are reference-only.
 
@@ -145,7 +140,7 @@ Checklist:
 - [x] Update `AGENTS.md` to name `docs/master-plan.md` as authoritative.
 - [x] Replace or patch `docs/implementation-plan.md` so it cannot be mistaken for current full plan.
 - [x] Add `docs/README.md` with doc hierarchy if absent.
-- [ ] Decide whether to commit or delete untracked local handoff files.
+- [x] Decide whether to commit or delete untracked local handoff files.
 
 Verification:
 
@@ -196,7 +191,7 @@ Proof-polish interlude reference — old repo-local “Phase 5”:
 
 ### Phase R1 — True receipt state machine
 
-**Status:** not complete.  
+**Status:** complete.
 **Goal:** Finish original Phase 4 as deterministic, typed, tested mock receipts.  
 **Stop condition:** Allowed internal mock actions create typed in-memory receipts; blocked/channel/public actions cannot create receipts; tests prove no side effects.
 
@@ -212,14 +207,14 @@ Files likely touched:
 
 Acceptance criteria:
 
-- [ ] Add tests for `createReceiptShape`.
-- [ ] Add tests that blocked actions cannot create receipts.
-- [ ] Add tests that approval-required actions cannot execute without approved state.
-- [ ] Model receipt creation as a function that returns `{ receipt, nextGateStatus }` or a typed blocked result.
-- [ ] UI action trail renders typed receipt fields, not only a string.
-- [ ] Receipt UI shows `receiptId`, `scenarioId`, `actionId`, `gateStatusBefore`, `decisionReason`, `reversibility`, `externalSideEffects: none`, and `createdAt`.
-- [ ] No persistence, storage APIs, telemetry, or external writes.
-- [ ] Disabled public/channel actions remain disabled.
+- [x] Add tests for `createReceiptShape`.
+- [x] Add tests that blocked actions cannot create receipts.
+- [x] Add tests that approval-required actions cannot execute without approved state.
+- [x] Model receipt creation as a function that returns `{ receipt, nextGateStatus }` or a typed blocked result.
+- [x] UI action trail renders typed receipt fields, not only a string.
+- [x] Receipt UI shows `receiptId`, `scenarioId`, `actionId`, `gateStatusBefore`, `decisionReason`, `reversibility`, `externalSideEffects: none`, and `createdAt`.
+- [x] No persistence, storage APIs, telemetry, or external writes.
+- [x] Disabled public/channel actions remain disabled.
 
 Required verification:
 
@@ -239,7 +234,7 @@ Stop and hand off if:
 
 ### Phase R2 — True public-safety scanner and docs release gate
 
-**Status:** partially complete, not release-grade.  
+**Status:** complete.
 **Goal:** Complete original Phase 5.  
 **Stop condition:** One command scans source/docs/tests/build output for banned APIs, forbidden terms, fixture isolation, and synthetic-only constraints; README/docs explain what is intentionally absent.
 
@@ -256,31 +251,31 @@ Files likely touched:
 
 Scanner requirements:
 
-- [ ] Scan source files.
-- [ ] Scan docs.
-- [ ] Scan scenario fixtures.
-- [ ] Scan built assets after `npm run build`.
-- [ ] Detect banned browser/network/storage/telemetry APIs.
-- [ ] Detect forbidden/source-identifying terms with word boundaries for short terms.
-- [ ] Allow exact forbidden terms only inside banned-list fixture/test files.
-- [ ] Fail if scenario data contains live URLs.
-- [ ] Fail if docs imply real-company source material or live production behavior.
-- [ ] Print clear findings with file paths.
+- [x] Scan source files.
+- [x] Scan docs.
+- [x] Scan scenario fixtures.
+- [x] Scan built assets after `npm run build`.
+- [x] Detect banned browser/network/storage/telemetry APIs.
+- [x] Detect forbidden/source-identifying terms with word boundaries for short terms.
+- [x] Allow exact forbidden terms only inside banned-list fixture/test files.
+- [x] Fail if scenario data contains live URLs.
+- [x] Fail if docs imply real-company source material or live production behavior.
+- [x] Print clear findings with file paths.
 
 README/docs requirements:
 
-- [ ] What this is.
-- [ ] Why it exists.
-- [ ] What it demonstrates.
-- [ ] Deterministic model and UI adapter path.
-- [ ] Evidence/risk separation.
-- [ ] Confidence vs severity distinction.
-- [ ] Human approval gates.
-- [ ] Mock receipts and `externalSideEffects: none`.
-- [ ] Synthetic/public-safe design.
-- [ ] Verification commands.
-- [ ] What is intentionally not included.
-- [ ] Future extensions clearly separated from current claims.
+- [x] What this is.
+- [x] Why it exists.
+- [x] What it demonstrates.
+- [x] Deterministic model and UI adapter path.
+- [x] Evidence/risk separation.
+- [x] Confidence vs severity distinction.
+- [x] Human approval gates.
+- [x] Mock receipts and `externalSideEffects: none`.
+- [x] Synthetic/public-safe design.
+- [x] Verification commands.
+- [x] What is intentionally not included.
+- [x] Future extensions clearly separated from current claims.
 
 Required verification:
 
@@ -294,17 +289,17 @@ git diff --check
 
 ### Phase R3 — Product proof packaging
 
-**Status:** not started.  
+**Status:** complete.
 **Goal:** Make the artifact evaluable as a hiring proof object without overclaiming.  
 **Stop condition:** A reviewer can understand the product judgment, architecture, safety constraints, verification path, and non-goals in 2–3 minutes.
 
 Scope:
 
-- [ ] Add a concise “What this proves” README section.
-- [ ] Add one model-flow diagram or text architecture flow.
-- [ ] Add a scenario walkthrough for one scenario.
-- [ ] Add screenshot captions or browser-captured screenshot notes if a preview is available.
-- [ ] Add “reviewer proof claims” and “do not claim” sections.
+- [x] Add a concise “What this proves” README section.
+- [x] Add one model-flow diagram or text architecture flow.
+- [x] Add a scenario walkthrough for one scenario.
+- [x] Add screenshot captions or browser-captured screenshot notes if a preview is available.
+- [x] Add “reviewer proof claims” and “do not claim” sections.
 
 Allowed proof claims:
 
@@ -326,7 +321,7 @@ Do not claim:
 
 ### Phase R4 — Visual hierarchy pass, only after R1/R2
 
-**Status:** defer.  
+**Status:** complete.
 **Goal:** Improve scan clarity once receipts and public-safety proof are complete.  
 **Stop condition:** Signal magnitude, evidence quality, and approval gates are legible on desktop and mobile without relying on long copy.
 
@@ -374,21 +369,11 @@ Before PR/push:
 
 ## 6. Recommended next action
 
-Do **Phase R0** first:
+Phase R4 is complete. Remaining next phase is **Phase R5 — Optional preview / PR / deployment lifecycle**, blocked on Jeff approval:
 
-1. Patch `AGENTS.md` and `docs/implementation-plan.md` so `docs/master-plan.md` is unambiguous.
-2. Add `docs/README.md` if needed.
-3. Decide whether to commit doc reset.
-
-Then do **Phase R1** before more visual polish:
-
-- Build typed receipt execution and receipt UI from the existing `DecisionReceipt` shape.
-- Keep all actions local/in-memory.
-- Prove blocked actions cannot create receipts.
-
-Then do **Phase R2**:
-
-- Make `npm run scan:public-safety` the actual release gate, including built assets and forbidden-term isolation.
+- Create a preview only when explicitly requested.
+- Push/open a PR only when explicitly requested.
+- Do not merge without Jeff explicitly saying `merge`.
 
 ---
 

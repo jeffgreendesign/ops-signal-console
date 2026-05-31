@@ -144,12 +144,20 @@ function renderProofSummary(view: ReturnType<typeof buildConsoleView>): string {
   `;
 }
 
-function renderActionButton(action: { id: string; label: string; disabled?: boolean; disabledReason?: string }): string {
+function renderActionButton(action: ReturnType<typeof buildConsoleView>['actions'][number]): string {
   const disabledAttributes = action.disabled
     ? `disabled aria-disabled="true" title="${escapeHtml(action.disabledReason ?? 'Blocked until review clears.') }"`
     : '';
+  const statusLabel = action.disabled ? 'Blocked' : 'Available';
+  const gateLabel = action.gateStatus.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
 
-  return `<button data-action-id="${escapeHtml(action.id)}" ${disabledAttributes}>${escapeHtml(action.label)}</button>`;
+  return `
+    <button class="action-button action-${action.gateStatus} ${action.disabled ? 'is-blocked' : 'is-available'}" data-action-id="${escapeHtml(action.id)}" ${disabledAttributes}>
+      <span class="action-status">${statusLabel}</span>
+      <strong>${escapeHtml(action.label)}</strong>
+      <small>${escapeHtml(action.actionType)} · ${escapeHtml(gateLabel)}</small>
+    </button>
+  `;
 }
 
 function renderReceipt(receipt: DecisionReceipt): string {
@@ -185,6 +193,8 @@ function renderShell(): void {
   const view = buildConsoleView(selectedScenario);
   const [facts, inferences, gaps, gates] = view.lanes;
   const actionBlocked = view.magnitude.actionState === 'blocked';
+  const availableActions = view.actions.filter((action) => !action.disabled).length;
+  const blockedActions = view.actions.length - availableActions;
 
   app.innerHTML = `
     <section class="shell">
@@ -239,16 +249,19 @@ function renderShell(): void {
         <section class="magnitude-deck" aria-label="Signal magnitude">
           <article class="bone-card dominant">
             <p class="eyebrow">Signal footprint</p>
+            <strong class="magnitude-callout">${radiusLabels[view.magnitude.blastRadius]}</strong>
             ${renderBlastRadius(view.magnitude.blastRadius)}
           </article>
           <article class="bone-card">
             <p class="eyebrow">Evidence clarity</p>
+            <strong class="magnitude-callout">${view.magnitude.evidenceCompleteness}/100</strong>
             ${renderScale('Completeness', view.magnitude.evidenceCompleteness)}
             ${renderScale('Severity', view.magnitude.severityScore)}
           </article>
           <article class="gate-card action-${view.magnitude.actionState} ${actionBlocked ? 'locked' : ''}">
             <span>${actionBlocked ? '[ACTION BLOCKED]' : '[REVIEW PATH]'}</span>
             <strong>${escapeHtml(gates.items[0] ?? 'No gated actions')}</strong>
+            <small>${availableActions} available · ${blockedActions} blocked</small>
           </article>
         </section>
 
@@ -275,6 +288,7 @@ function renderShell(): void {
           <div class="action-context">
             <p class="eyebrow">Mock action boundary</p>
             <strong>Buttons update only the local in-memory trail.</strong>
+            <span>${availableActions} available now · ${blockedActions} held by evidence or approval gates</span>
           </div>
           ${view.actions.map(renderActionButton).join('')}
         </section>
