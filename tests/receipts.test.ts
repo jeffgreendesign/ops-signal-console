@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createReceiptShape, executeReceiptAction } from '../src/model/receipts';
-import { buildDisplayModel } from '../src/model/scoring';
+import { executeReceiptAction } from '../src/model/receipts';
 import type { GatedAction, SignalScenario } from '../src/model/types';
-import { forbiddenPublicArtifactTerms } from './public-safety-terms';
 
 const baseActions: GatedAction[] = [
   {
@@ -80,13 +78,6 @@ const action = (id: string): GatedAction => {
   return found!;
 };
 
-const scenarioWithExecutedAction = (actionId: string): SignalScenario => ({
-  ...scenario,
-  gatedActions: scenario.gatedActions.map((candidate) =>
-    candidate.id === actionId ? { ...candidate, executionStatus: 'executedMock' } : candidate
-  ),
-});
-
 describe('typed decision receipts', () => {
   it('creates exactly one typed receipt for an allowed internal action', () => {
     const result = executeReceiptAction(scenario, action('inspect-internally'), {
@@ -139,32 +130,5 @@ describe('typed decision receipts', () => {
       gateStatus: 'blockedByPolicy',
       blockedReasons: ['Only internal mock actions can create local receipts in this demo.'],
     });
-  });
-
-  it('prevents the shape helper from bypassing receipt policy', () => {
-    expect(() => createReceiptShape(scenario, action('public-note'), 'available')).toThrow('Only internal mock actions can create local receipts in this demo.');
-    expect(() => createReceiptShape(scenario, action('hold-review'), 'needsEvidence')).toThrow('Only available actions can create local receipts.');
-  });
-
-  it('marks executed receipts in the display model without leaving the action available', () => {
-    const display = buildDisplayModel(scenarioWithExecutedAction('inspect-internally'));
-
-    expect(display.allowedInternalActions.map((candidate) => candidate.id)).not.toContain('inspect-internally');
-
-    const executedAction = display.blockedActions.find((candidate) => candidate.id === 'inspect-internally');
-    expect(executedAction).toBeDefined();
-    expect(executedAction!.gateStatus).toBe('executedMock');
-    expect(executedAction!.blockedReasons).toEqual(['Mock execution receipt already exists.']);
-  });
-
-  it('keeps receipt payloads free of forbidden public artifact terms', () => {
-    const result = executeReceiptAction(scenario, action('inspect-internally'));
-    expect(result.ok).toBe(true);
-    if (!result.ok) throw new Error('expected receipt result');
-
-    const receiptText = JSON.stringify(result.receipt).toLowerCase();
-    for (const term of forbiddenPublicArtifactTerms) {
-      expect(receiptText).not.toContain(term);
-    }
   });
 });

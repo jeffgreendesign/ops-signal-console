@@ -4,7 +4,6 @@ const missingEvidenceLabels = (scenario: SignalScenario): Set<string> =>
   new Set(scenario.evidenceGaps.map((gap) => gap.label));
 
 export const deriveGateStatus = (scenario: SignalScenario, action: GatedAction): GateStatus => {
-  if (action.executionStatus) return action.executionStatus;
   if (action.policyBlocked) return 'blockedByPolicy';
 
   const missing = missingEvidenceLabels(scenario);
@@ -22,8 +21,6 @@ export const toActionDisplay = (scenario: SignalScenario, action: GatedAction): 
   const blockedReasons: string[] = [];
 
   if (action.policyBlocked) blockedReasons.push('Blocked by demo policy.');
-  if (gateStatus === 'executedMock') blockedReasons.push('Mock execution receipt already exists.');
-  if (gateStatus === 'rolledBackMock') blockedReasons.push('Mock execution has been rolled back.');
   for (const evidence of action.requiredEvidence) {
     if (missing.has(evidence)) blockedReasons.push(`Missing required evidence: ${evidence}.`);
   }

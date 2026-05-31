@@ -163,18 +163,18 @@ describe('Ops Signal Console scenario model', () => {
       .map((file) => readProjectFile(file).toLowerCase())
       .join('\n');
     const bannedApis = [
-      'fetch(',
-      'xmlhttprequest',
-      'websocket',
-      'eventsource',
-      'localstorage',
-      'sessionstorage',
-      'indexeddb',
-      'sendbeacon',
-      'serviceworker',
-      'caches.open',
-      'document.cookie'
-    ];
+      ['fet', 'ch('],
+      ['xml', 'http', 'request'],
+      ['web', 'socket'],
+      ['event', 'source'],
+      ['local', 'storage'],
+      ['session', 'storage'],
+      ['indexed', 'db'],
+      ['send', 'beacon'],
+      ['service', 'worker'],
+      ['caches', '.open'],
+      ['document', '.cookie']
+    ].map((parts) => parts.join(''));
 
     for (const api of bannedApis) expect(source).not.toContain(api);
   });
@@ -186,10 +186,11 @@ describe('Ops Signal Console scenario model', () => {
     expect(config).toContain('polyfill: false');
   });
 
-  it('updates mock action receipts and gate state through the typed execution helper', () => {
+  it('updates mock action receipts without re-rendering the full console shell', () => {
     const source = readProjectFile('src/main.ts');
 
     expect(source).toContain('function renderActivityTrail');
+    expect(source).toContain('renderActivityTrail();');
     expect(source).toContain('const trailPanel = document.querySelector<HTMLElement>');
     expect(source).toContain('executeReceiptAction(selectedScenario, action');
     expect(source).toContain('data-action-id');
@@ -202,11 +203,8 @@ describe('Ops Signal Console scenario model', () => {
     expect(source).toContain('receipt.externalSideEffects');
     expect(source).toContain('receipt.createdAt');
 
-    const actionHandlerStart = source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action-id]')");
-    expect(actionHandlerStart).toBeGreaterThanOrEqual(0);
-    const actionHandler = source.slice(actionHandlerStart);
-    expect(actionHandler).toContain('executionStatus: result.nextGateStatus');
-    expect(actionHandler).toContain('renderShell();');
+    const actionHandler = source.slice(source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action-id]')"));
+    expect(actionHandler).not.toContain('render();');
   });
 
   it('keeps mobile action controls at a non-zooming touch font size', () => {

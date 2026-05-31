@@ -10,7 +10,7 @@ Included:
 - Known-fact, inferred-risk, and evidence-gap fields.
 - Severity, confidence, evidence-completeness, blast-radius, and action-state derivation.
 - Internal-safe mock action labels and blocked public/channel action labels.
-- Tests and an initial public-safety scan.
+- Tests and a public-safety release gate that scans source, docs, tests, scenarios, and built assets.
 
 ## Non-goals
 
