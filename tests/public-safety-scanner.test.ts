@@ -101,6 +101,22 @@ describe('public-safety release scanner', () => {
     expect(result.findings.some((finding) => finding.kind === 'unexpected built network helper')).toBe(true);
   });
 
+  it('fails when built assets are missing from the release gate', () => {
+    const root = makeTempRoot();
+    roots.push(root);
+    writeCleanProject(root);
+    rmSync(join(root, 'dist'), { recursive: true, force: true });
+
+    const result = scanPaths({ root });
+
+    expect(result.findings).toContainEqual(
+      expect.objectContaining({
+        file: 'dist',
+        kind: 'missing built assets'
+      })
+    );
+  });
+
   it('prints enough path and context detail to fix findings', () => {
     const storage = term(['local', 'Storage']);
     const finding = scanText('src/main.ts', `const value = window.${storage};`)[0];

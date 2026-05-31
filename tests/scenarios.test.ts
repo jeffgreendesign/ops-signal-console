@@ -203,8 +203,12 @@ describe('Ops Signal Console scenario model', () => {
     expect(source).toContain('receipt.externalSideEffects');
     expect(source).toContain('receipt.createdAt');
 
-    const actionHandler = source.slice(source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action-id]')"));
-    expect(actionHandler).not.toContain('render();');
+    const actionHandlerStart = source.indexOf("document.querySelectorAll<HTMLButtonElement>('[data-action-id]')");
+    expect(actionHandlerStart).toBeGreaterThanOrEqual(0);
+    const actionHandlerEnd = source.indexOf('\n}\n\nrenderShell();', actionHandlerStart);
+    expect(actionHandlerEnd).toBeGreaterThan(actionHandlerStart);
+    const actionHandler = source.slice(actionHandlerStart, actionHandlerEnd);
+    expect(actionHandler).not.toContain('renderShell();');
   });
 
   it('keeps mobile action controls at a non-zooming touch font size', () => {

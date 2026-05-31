@@ -246,4 +246,6 @@ function runCli() {
   console.log(`Public-safety scan passed (${files.length} files): source, docs, tests, scenario fixtures, and built assets are public-safe.`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) runCli();
+const isCliRun = process.argv[1] ? import.meta.url === pathToFileURL(process.argv[1]).href : false;
+
+if (isCliRun) runCli();
