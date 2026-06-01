@@ -1,114 +1,73 @@
 # Ops Signal Console
 
-Synthetic portfolio signal triage console for invented multi-brand launches.
+<p align="center">
+  <strong>Status:</strong> active ·
+  <strong>Stack:</strong> TypeScript 6 / Vite 8 / Vitest ·
+  <strong>Data:</strong> synthetic only ·
+  <strong>Runtime:</strong> local static prototype
+</p>
 
-This is a public-safe local prototype. It uses invented scenarios only and does not connect to live systems.
+Synthetic signal triage console for invented multi-brand launches.
 
-## Portfolio frame
+Ops Signal Console is a local portfolio prototype for reviewing noisy launch, quality, allocation, and claims signals without turning every signal into an unsupported action. It keeps known facts, inferred risk, evidence gaps, confidence, severity, and approval gates visibly separate.
 
-The console is framed for a house-of-brands operator launching multiple new verticals. It helps review signals across brands, surfaces, and launch stages while keeping facts, inferences, evidence gaps, and approval gates separate.
+The project is public-safe by design: invented scenarios only, no live feeds, no private source material, no telemetry, no persistence, and no external writes.
 
-The artifact is fresh, with only general learnings extracted from earlier private work. No private or real-world company context is source material for the product, copy, data model, or visuals.
+## What it demonstrates
 
-## What this proves
+This repo is meant to be reviewed as a small product proof object, not as production software. In a few minutes, it shows how a console can:
 
-This repo is meant to be evaluated as a small product proof object, not as a production system. In 2–3 minutes, a reviewer should be able to see that it can:
+- turn synthetic cross-brand signal packets into deterministic review state
+- separate observed facts from inferred risks and recommended checks
+- treat severity as potential impact and confidence as evidence quality
+- block channel, public-facing, or irreversible actions when proof or approval is missing
+- allow safe internal-only actions and create typed in-memory mock receipts
+- prove its synthetic/public-safe boundary through tests, docs, and a built-asset scan
 
-- Turn invented cross-brand signal packets into a deterministic review surface.
-- Keep observed facts, inferred risk, missing proof, and recommended checks visibly separate.
-- Treat severity as potential impact and confidence as proof quality, so a loud signal does not become an unsupported action.
-- Block channel and public-facing actions when required evidence or human approval is missing.
-- Produce typed local mock receipts for allowed internal actions with `externalSideEffects: none`.
-- Prove its synthetic/public-safe boundary through tests, docs, and a built-asset scan.
+## Product frame
 
-## Architecture flow
+The console is framed for a house-of-brands operator reviewing multiple new verticals. It helps answer:
+
+- What happened?
+- Which parts are observed facts versus inferred risk?
+- What proof is missing?
+- Which actions are safe, blocked, or approval-gated?
+- What would a reviewer need before releasing channel or public-facing copy?
+
+The artifact is fresh and generalized. It does not copy private work systems, private workflows, real companies, real people, real operational records, or live data.
+
+## Architecture
 
 ```text
 Synthetic fixtures
   src/data/scenarios.ts
     ↓
 Deterministic model functions
-  src/model/scoring.ts, src/model/gates.ts, src/model/receipts.ts
+  src/model/scoring.ts
+  src/model/gates.ts
+  src/model/receipts.ts
     ↓
 Display adapter
   src/scenarios.ts
     ↓
 Static console UI
-  src/main.ts, src/styles.css
+  src/main.ts
+  src/styles.css
     ↓
 Local-only review trail
   typed in-memory mock receipts; no storage, feeds, or external writes
 ```
 
-## Scenario walkthrough: claims review blocks channel copy
+## Scenario walkthrough
+
+One representative scenario reviews a draft claims note:
 
 1. The fixture starts with an invented review packet: a draft note exists, substantiation proof is missing, and human review has not cleared channel or public-facing copy.
-2. The model records those items as known facts, then separately names the inferred risks: substantiation gap and overclaim risk.
-3. Evidence gaps lower confidence and map directly to gated actions: `release-channel-claim` and `publish-public-claim` both require substantiation proof and reviewer approval proof.
-4. The UI can still offer the safe internal action `Draft internal note` because it needs no external side effect.
-5. Clicking that internal action creates a typed mock receipt with scenario/action IDs, gate status before execution, decision reason, reversibility, timestamp, and `externalSideEffects: none`.
-6. Channel and public-facing actions remain blocked until evidence and human approval gates are satisfied. The prototype does not implement a live path for those actions.
-
-## Screenshot notes
-
-No public preview is included in this phase. If run locally with `npm run dev -- --port 5173`, useful reviewer screenshots would be:
-
-- Console overview: scenario selector, deterministic scores, proof-gap summary, and action readiness visible together.
-- Claims review scenario: known facts and inferred risks side by side, with channel/public-facing actions blocked.
-- Mock receipt state: internal action clicked once, showing the local receipt fields and `externalSideEffects: none`.
-
-## Reviewer proof claims
-
-It is fair to claim this artifact demonstrates:
-
-- Deterministic display-model logic rather than prompt-only classification.
-- Explicit fact/inference separation.
-- Confidence and severity as separate dimensions.
-- Evidence gaps that block action readiness.
-- Human gates before channel or public-facing action.
-- Inspectable mock receipts without side effects.
-- Public-safe synthetic constraints verified by an automated scan.
-
-## Do not claim
-
-Do not present this artifact as:
-
-- Production-ready software.
-- Connected to live feeds, alerts, systems, or external action paths.
-- Based on real-world source material.
-- A deployment, hosted service, or persistent workflow.
-- Advice for regulated, nutrition, claims, legal, medical, or operational decisions.
-
-## What it demonstrates
-
-- Synthetic portfolio signal triage across invented brands and verticals.
-- Surface-aware context: launch readiness, quality review, field feedback, allocation risk, and review exposure.
-- A deterministic model path from `src/data/scenarios.ts` through `src/model/*` into the UI adapter in `src/scenarios.ts`.
-- Separation of known facts from inferred risk.
-- Confidence as evidence quality, separate from severity as potential impact.
-- Evidence-gap, blast-radius, and margin-sensitivity surfacing.
-- Display-safe decision-stakes and control-pattern labels for reviewer scanability.
-- Recommended next checks before action.
-- Human approval gates and approval-trail language before external or irreversible steps.
-- Typed in-memory mock receipts with `externalSideEffects: none` for allowed internal actions only.
-- A public-safety release gate that scans source, docs, tests, scenarios, and built assets.
-
-## Safety boundaries
-
-Do not add:
-
-- Identifying people, organizations, traces, response records, links, secrets, or private context.
-- Live integrations, live alerts, production-system access, scraping, browser automation, telemetry, persistence, or external writes.
-- Sign-in, purchasing, user profiles, or irreversible production behavior.
-- Domain-specific material from another project.
-
-## Intentional absences
-
-This artifact is not production-ready software. It has no live data input, no external action path, no analytics, no durable state, no sign-in, and no public deployment in this phase.
-
-## Future extensions
-
-Future work may improve visual hierarchy, add a temporary review preview, or expand receipt proof. Those are separate tasks, not current runtime capabilities.
+2. The model records those items as known facts.
+3. It separately names inferred risks such as substantiation gap and overclaim risk.
+4. Evidence gaps lower confidence and map to blocked actions: `release-channel-claim` and `publish-public-claim` both require proof and reviewer approval.
+5. The UI can still offer the safe internal action `Draft internal note` because it has no external side effect.
+6. Clicking that action creates a typed mock receipt with scenario/action IDs, decision reason, reversibility, timestamp, and `externalSideEffects: none`.
 
 ## Run locally
 
@@ -116,6 +75,20 @@ Future work may improve visual hierarchy, add a temporary review preview, or exp
 npm install
 npm run dev -- --port 5173
 ```
+
+Open the local Vite URL, usually:
+
+```text
+127.0.0.1:5173
+```
+
+Useful inspection path:
+
+1. Start on the console overview.
+2. Switch between scenarios and compare score, confidence, proof gaps, and action readiness.
+3. Inspect known facts and inferred risks side by side.
+4. Click a safe internal action and confirm the mock receipt appears.
+5. Confirm blocked actions remain blocked when evidence or approval is missing.
 
 ## Verify
 
@@ -126,3 +99,49 @@ npm run build
 npm run scan:public-safety
 git diff --check
 ```
+
+## Safety boundaries
+
+Do not add:
+
+- identifying people, organizations, operational records, support traces, links, secrets, screenshots, or private context
+- live integrations, live alerts, production-system access, scraping, browser automation, telemetry, persistence, analytics, or external writes
+- sign-in, purchasing, user profiles, or irreversible production behavior
+- domain-specific material copied from another project
+
+The prototype is intentionally local and synthetic. It has no durable state, no public deployment, no live action path, and no production decision authority.
+
+## Reviewer proof claims
+
+It is fair to claim this artifact demonstrates:
+
+- deterministic display-model logic rather than prompt-only classification
+- explicit fact/inference separation
+- confidence and severity as separate dimensions
+- evidence gaps that block action readiness
+- human gates before channel or public-facing action
+- inspectable mock receipts without side effects
+- public-safety release checks over source, tests, docs, scenarios, and built assets
+
+Do not present it as production-ready software, a hosted service, a live monitoring system, or advice for regulated, legal, medical, financial, claims, or operational decisions.
+
+## Project structure
+
+```text
+ops-signal-console/
+├── src/data/        # synthetic scenario fixtures
+├── src/model/       # deterministic scoring, gates, receipts, and types
+├── src/main.ts      # static browser UI entrypoint
+├── src/scenarios.ts # display adapter
+├── src/styles.css   # console styling
+├── tests/           # Vitest coverage for model and UI adapter behavior
+└── scripts/         # public-safety scan
+```
+
+## Future extensions
+
+Future work may add a temporary review preview, improve visual hierarchy, expand receipt proof, or add more synthetic scenario families. Those are separate tasks, not current runtime capabilities.
+
+## License
+
+MIT, as declared in `package.json`.
