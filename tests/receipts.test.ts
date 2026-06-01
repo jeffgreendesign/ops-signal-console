@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { executeReceiptAction } from '../src/model/receipts';
+import { scenarios } from '../src/data/scenarios';
 import type { GatedAction, SignalScenario } from '../src/model/types';
 
 const baseActions: GatedAction[] = [
@@ -122,9 +123,35 @@ describe('typed decision receipts', () => {
     });
   });
 
-  it('does not create receipts for channel or public actions in the current demo', () => {
+  it('creates only a typed local mock receipt for the opportunity scenario internal action', () => {
+    const opportunity = scenarios.find((candidate) => candidate.kind === 'opportunitySignal');
+    expect(opportunity).toBeDefined();
+    const internalAction = opportunity!.gatedActions.find((candidate) => candidate.id === 'log-opportunity-packet');
+    const channelAction = opportunity!.gatedActions.find((candidate) => candidate.id === 'expand-channel-test');
+    expect(internalAction).toBeDefined();
+    expect(channelAction).toBeDefined();
     const publicResult = executeReceiptAction({ ...scenario, evidenceGaps: [] }, action('public-note'));
 
+    const internalResult = executeReceiptAction(opportunity!, internalAction!, {
+      createdAt: '2026-05-30T14:30:00.000Z',
+    });
+    const channelResult = executeReceiptAction(opportunity!, channelAction!);
+
+    expect(internalResult.ok).toBe(true);
+    if (!internalResult.ok) throw new Error('expected opportunity receipt result');
+    expect(internalResult.receipt).toMatchObject({
+      scenarioId: 'scenario-promising-channel-lift',
+      actionId: 'log-opportunity-packet',
+      gateStatusBefore: 'available',
+      externalSideEffects: 'none',
+      reversibility: 'reversible',
+      createdAt: '2026-05-30T14:30:00.000Z',
+    });
+    expect(channelResult).toEqual({
+      ok: false,
+      gateStatus: 'blockedByPolicy',
+      blockedReasons: ['Only internal mock actions can create local receipts in this demo.'],
+    });
     expect(publicResult).toEqual({
       ok: false,
       gateStatus: 'blockedByPolicy',

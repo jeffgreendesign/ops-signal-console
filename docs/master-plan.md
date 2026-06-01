@@ -90,11 +90,12 @@ Implemented:
 - Vite/TypeScript static app scaffold.
 - `AGENTS.md`, README, scope/model/scenario/public-safety docs.
 - Deterministic `SignalScenario` model and pure scoring/gate functions.
-- Four synthetic scenarios:
+- Five synthetic scenarios:
   - `qualitySampleDrift`
   - `claimsReviewBlocked`
   - `channelMismatch`
   - `launchReadinessMismatch`
+  - `opportunitySignal`
 - UI adapter in `src/scenarios.ts` that maps deterministic model output into render shape.
 - UI shell in `src/main.ts` and visual system in `src/styles.css`.
 - Proof-gap summary in display model and UI.
@@ -344,7 +345,7 @@ git diff --check
 
 ### Phase R5 — Opportunity signal scenario
 
-**Status:** active / next.
+**Status:** complete.
 **Goal:** Add one positive/upside signal that proves the console can detect opportunity without prematurely recommending external action.
 **Stop condition:** A synthetic opportunity scenario renders through the deterministic model/UI adapter, distinguishes upside from proof/readiness, and keeps public/channel actions gated until evidence and human approval clear.
 
@@ -370,14 +371,14 @@ Suggested scenario shape:
 
 Acceptance criteria:
 
-- [ ] Add or update tests before implementation for the opportunity scenario.
-- [ ] Scenario appears in the UI via the existing adapter path.
-- [ ] Opportunity/upside copy is visible without implying proof or production readiness.
-- [ ] Severity/risk remains separate from opportunity size or upside potential.
-- [ ] Evidence gaps still lower confidence/evidence completeness.
-- [ ] Public/channel actions remain disabled or approval-gated until proof clears.
-- [ ] Available internal action can create only a typed local mock receipt.
-- [ ] Public-safety scanner still passes over source, docs, tests, scenarios, and built assets.
+- [x] Add or update tests before implementation for the opportunity scenario.
+- [x] Scenario appears in the UI via the existing adapter path.
+- [x] Opportunity/upside copy is visible without implying proof or production readiness.
+- [x] Severity/risk remains separate from opportunity size or upside potential.
+- [x] Evidence gaps still lower confidence/evidence completeness.
+- [x] Public/channel actions remain disabled or approval-gated until proof clears.
+- [x] Available internal action can create only a typed local mock receipt.
+- [x] Public-safety scanner still passes over source, docs, tests, scenarios, and built assets.
 
 Verification:
 
@@ -416,11 +417,7 @@ Before PR/push:
 
 ## 6. Recommended next action
 
-Do **Phase R5 — Opportunity signal scenario** next:
-
-- Add one synthetic positive/upside signal framed as promising but not proven.
-- Preserve semantic risk/gate colors and deterministic model boundaries.
-- Keep public/channel actions gated; only internal mock receipt actions may execute locally.
+Phase R6 remains the next step, but it is approval-gated: create a preview, push/open a PR, deploy, or merge only if Jeff explicitly requests that lifecycle step. For local-only continuation, stop at the verified Phase R5 commit and report branch/status.
 
 ---
 

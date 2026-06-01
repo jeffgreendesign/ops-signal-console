@@ -29,13 +29,14 @@ function containsForbiddenTerm(text: string, term: string): boolean {
 }
 
 describe('Ops Signal Console scenario model', () => {
-  it('ships exactly four deterministic public-safe synthetic portfolio signal scenarios', () => {
-    expect(scenarios).toHaveLength(4);
+  it('ships exactly five deterministic public-safe synthetic portfolio signal scenarios', () => {
+    expect(scenarios).toHaveLength(5);
     expect(scenarios.map((scenario) => scenario.id)).toEqual([
       'scenario-quality-sample-drift',
       'scenario-claims-review-blocked',
       'scenario-channel-mismatch',
-      'scenario-launch-readiness-mismatch'
+      'scenario-launch-readiness-mismatch',
+      'scenario-promising-channel-lift'
     ]);
   });
 
@@ -153,9 +154,9 @@ describe('Ops Signal Console scenario model', () => {
 
   it('models visual importance with varied severity, blast radius, and evidence completeness', () => {
     const views = scenarios.map(buildConsoleView);
-    expect(views.map((view) => view.magnitude.severityScore)).toEqual([82, 91, 80, 91]);
-    expect(views.map((view) => view.magnitude.blastRadius)).toEqual(['surface', 'surface', 'surface', 'system']);
-    expect(views.map((view) => view.magnitude.evidenceCompleteness)).toEqual([50, 60, 60, 50]);
+    expect(views.map((view) => view.magnitude.severityScore)).toEqual([82, 91, 80, 91, 80]);
+    expect(views.map((view) => view.magnitude.blastRadius)).toEqual(['surface', 'surface', 'surface', 'system', 'surface']);
+    expect(views.map((view) => view.magnitude.evidenceCompleteness)).toEqual([50, 60, 60, 50, 50]);
   });
 
   it('does not use browser network, storage, or telemetry APIs in source code', () => {
@@ -243,6 +244,15 @@ describe('Ops Signal Console scenario model', () => {
     expect(css).toContain('@media (min-width: 921px) and (max-height: 720px)');
     expect(css).toContain('.signal-hero { min-height: clamp(13.5rem, 42vh, 17rem); }');
     expect(css).toContain('.signal-copy { align-content: center; padding: 1rem 1.25rem; }');
+  });
+
+  it('keeps non-selected scenario card side rails full height', () => {
+    const css = readProjectFile('src/styles.css');
+    const railRule = css.slice(css.indexOf('.signal-tab::before'), css.indexOf('.signal-tab::after'));
+
+    expect(railRule).toContain('inset: 0 auto 0 0;');
+    expect(railRule).not.toContain('scaleY(0.64)');
+    expect(railRule).not.toContain('transform: scaleY');
   });
 
   it('separates Bonefield identity accents from warning and danger state colors', () => {
