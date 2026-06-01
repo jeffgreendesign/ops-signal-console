@@ -8,7 +8,7 @@ const publicArtifactPaths = ['src', 'README.md', 'AGENTS.md', 'docs', 'index.htm
 const allowedProfileChrome = [
   'https://github.com/jeffgreendesign/ops-signal-console',
   'https://www.hirejeffgreen.com/',
-  'https://www.linkedin.com/in/jeffgreenweb',
+  'https://www.linkedin.com/in/jeffgreendev/',
   'LinkedIn'
 ];
 

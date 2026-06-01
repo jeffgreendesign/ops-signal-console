@@ -110,7 +110,7 @@ const ALLOWED_FORBIDDEN_TERM_FILES = new Set([
 const ALLOWED_PROFILE_CHROME = [
   'https://github.com/jeffgreendesign/ops-signal-console',
   'https://www.hirejeffgreen.com/',
-  'https://www.linkedin.com/in/jeffgreenweb',
+  'https://www.linkedin.com/in/jeffgreendev/',
   'LinkedIn',
 ];
 

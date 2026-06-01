@@ -328,7 +328,7 @@ function renderShell(): void {
           <nav class="profile-links" aria-label="Project and profile links">
             <a href="https://github.com/jeffgreendesign/ops-signal-console" rel="noreferrer">GitHub</a>
             <a href="https://www.hirejeffgreen.com/" rel="noreferrer">Portfolio</a>
-            <a href="https://www.linkedin.com/in/jeffgreenweb" rel="noreferrer">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/jeffgreendev/" rel="noreferrer">LinkedIn</a>
           </nav>
         </footer>
       </section>
