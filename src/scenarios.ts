@@ -39,6 +39,7 @@ export interface ActionabilityPath {
   gateStatus: GateStatus;
   primaryReason: string;
   proofNeeded: string[];
+  gateDetails: { label: string; value: string }[];
   nextChecks: string[];
   externalSideEffects: 'none';
 }
@@ -105,6 +106,13 @@ const actionabilityState = (action: ReturnType<typeof buildDisplayModel>['blocke
   return 'blocked';
 };
 
+const gateDetailsForAction = (action: ReturnType<typeof buildDisplayModel>['blockedActions'][number]): ActionabilityPath['gateDetails'] => [
+  { label: 'Evidence required', value: action.requiredEvidence.length ? action.requiredEvidence.join(', ') : 'none' },
+  { label: 'Human approval', value: action.requiresHumanApproval ? 'required' : 'not required' },
+  { label: 'Action surface', value: action.actionType },
+  { label: 'External side effects', value: 'none' },
+];
+
 const buildActionabilitySummary = (display: ReturnType<typeof buildDisplayModel>): ActionabilitySummary => {
   const nextProof = Array.from(new Set(display.blockedActions.flatMap((action) => action.requiredEvidence)));
 
@@ -118,6 +126,7 @@ const buildActionabilitySummary = (display: ReturnType<typeof buildDisplayModel>
       gateStatus: action.gateStatus,
       primaryReason: 'Local internal review is available with no external side effects.',
       proofNeeded: [],
+      gateDetails: gateDetailsForAction(action),
       nextChecks: display.recommendedChecks,
       externalSideEffects: 'none',
     })),
@@ -129,6 +138,7 @@ const buildActionabilitySummary = (display: ReturnType<typeof buildDisplayModel>
       gateStatus: action.gateStatus,
       primaryReason: blockedActionReason(action.blockedReasons),
       proofNeeded: action.requiredEvidence,
+      gateDetails: gateDetailsForAction(action),
       nextChecks: display.recommendedChecks,
       externalSideEffects: 'none',
     })),

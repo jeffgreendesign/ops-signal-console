@@ -167,6 +167,19 @@ describe('Phase 3 UI adapter', () => {
     expect(view.actionability.nextProof).toContain('reviewer-approval-proof');
   });
 
+  it('adds gate drill-down details for blocked actions without hiding required proof', () => {
+    const scenario = findRawScenario('claimsReviewBlocked');
+    const view = buildConsoleView(scenario);
+
+    expect(view.actionability.blocked[0].gateDetails).toEqual([
+      { label: 'Evidence required', value: 'substantiation-proof, reviewer-approval-proof' },
+      { label: 'Human approval', value: 'required' },
+      { label: 'Action surface', value: 'channel' },
+      { label: 'External side effects', value: 'none' },
+    ]);
+    expect(view.actionability.blocked[1].gateDetails).toContainEqual({ label: 'Action surface', value: 'public' });
+  });
+
   it('renders the opportunity signal as promising but not proven through the deterministic adapter', () => {
     const opportunity = findRawScenario('opportunitySignal');
     const display = buildDisplayModel(opportunity);
@@ -192,6 +205,45 @@ describe('Phase 3 UI adapter', () => {
     expect(text).not.toContain('good news');
     expect(text).not.toContain('proven demand');
     expect(text).not.toContain('ready to scale');
+  });
+
+  it('renders a frozen launch bundle mismatch as a fulfillment-gated signal, not a public action', () => {
+    const frozenLaunch = findRawScenario('fulfillmentConstraint');
+    const display = buildDisplayModel(frozenLaunch);
+    const view = buildConsoleView(frozenLaunch);
+    const text = flatten(view);
+
+    expect(frozenLaunch.title).toBe('Frozen launch bundle mismatch needs fulfillment proof');
+    expect(text).toContain('frozen format launch detected');
+    expect(text).toContain('bundle availability mismatch');
+    expect(text).toContain('shipping-window-proof');
+    expect(text).toContain('region-eligibility-proof');
+    expect(text).toContain('claim-substantiation-proof');
+    expect(text).toContain('support-remediation-proof');
+    expect(display.blastRadius).toBe('system');
+    expect(display.severity.score).toBe(88);
+    expect(view.actionability.availableNow.map((path) => path.label)).toEqual(['Log frozen launch review packet']);
+    expect(view.actionability.blocked.map((path) => ({ label: path.label, state: path.state, gateStatus: path.gateStatus }))).toEqual([
+      { label: 'Update launch operations note', state: 'needsEvidence', gateStatus: 'needsEvidence' },
+      { label: 'Publish frozen delivery claim', state: 'needsEvidence', gateStatus: 'needsEvidence' },
+    ]);
+    expect(view.actionability.blocked[1].gateDetails).toEqual([
+      { label: 'Evidence required', value: 'shipping-window-proof, region-eligibility-proof, claim-substantiation-proof, support-remediation-proof' },
+      { label: 'Human approval', value: 'required' },
+      { label: 'Action surface', value: 'public' },
+      { label: 'External side effects', value: 'none' },
+    ]);
+    expect(text).not.toContain('ready to launch');
+    expect(text).not.toContain('guarantee is proven');
+  });
+
+  it('renders gate drill-down copy in the static UI shell from escaped display-safe fields', () => {
+    const source = readFileSync(new URL('../src/main.ts', import.meta.url), 'utf8');
+
+    expect(source).toContain('gate-drilldown');
+    expect(source).toContain('path.gateDetails.map');
+    expect(source).toContain('escapeHtml(detail.label)');
+    expect(source).toContain('escapeHtml(detail.value)');
   });
 
   it('keeps UI-facing output public-safe and blocks non-internal actions with safe reasons', () => {
