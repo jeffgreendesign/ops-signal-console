@@ -47,7 +47,10 @@ function renderScenarioButton(scenario: Scenario): string {
       <span class="tab-score">${view.magnitude.severityScore}</span>
       <span class="tab-copy">
         <strong>${escapeHtml(brandLabel)} · ${escapeHtml(surfaceLabel)}</strong>
-        <small>${escapeHtml(kindLabel(scenario.kind))} · ${radiusLabels[view.magnitude.blastRadius ?? 'local']} radius</small>
+        <small>
+          <span class="tab-tag">${escapeHtml(kindLabel(scenario.kind))}</span>
+          <span class="tab-tag">${radiusLabels[view.magnitude.blastRadius ?? 'local']} radius</span>
+        </small>
       </span>
     </button>
   `;

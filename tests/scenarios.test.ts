@@ -255,6 +255,20 @@ describe('Ops Signal Console scenario model', () => {
     expect(railRule).not.toContain('transform: scaleY');
   });
 
+  it('stacks scenario card bottom tags one per line on mobile', () => {
+    const source = readProjectFile('src/main.ts');
+    const css = readProjectFile('src/styles.css');
+    const mobileBlockStart = css.indexOf('@media (max-width: 920px)');
+    const mobileBlock = css.slice(mobileBlockStart);
+
+    expect(source).toContain('class="tab-tag"');
+    expect(css).toContain('.tab-copy small');
+    expect(mobileBlock).toContain('.tab-copy small {');
+    expect(mobileBlock).toContain('display: grid;');
+    expect(mobileBlock).toContain('gap: 0.12rem;');
+    expect(mobileBlock).toContain(".tab-tag + .tab-tag::before { content: none; }");
+  });
+
   it('separates Bonefield identity accents from warning and danger state colors', () => {
     const css = readProjectFile('src/styles.css');
 

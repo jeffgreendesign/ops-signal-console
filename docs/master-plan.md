@@ -415,9 +415,9 @@ Before PR/push:
 
 ### Phase R7 — Proposed next local-only phase
 
-**Status:** proposed / unassigned; do not implement without Jeff naming this or another build target.
+**Status:** proposed / unassigned; do not implement without Jeff naming this or another build slice.
 **Goal:** Add one small local-only product behavior slice that makes the console more useful as an inspectable decision surface without changing external lifecycle state.
-**Stop condition:** Jeff explicitly approves a local implementation target, or this proposal remains docs-only.
+**Stop condition:** Jeff explicitly approves a local implementation slice, or this proposal remains docs-only.
 
 Candidate local-only slices:
 
@@ -430,7 +430,7 @@ Constraints for any R7 implementation:
 
 - Local-only static app behavior; no preview, push, PR, deployment, or merge unless separately requested.
 - No new dependencies unless Jeff approves.
-- No persistence, storage APIs, telemetry, network calls, live integrations, auth, scraping, browser automation, or external writes.
+- No persistence, storage APIs, telemetry, network calls, live integrations, sign-in, scraping, browser automation, or external writes.
 - Synthetic/public-safe data only.
 - Prefer TDD through existing model/adapter tests before UI wiring.
 - Preserve the existing public-safety scanner and no-side-effect receipt boundaries.
@@ -443,7 +443,7 @@ Recommended first R7 candidate, if Jeff wants local implementation: **Gate reaso
 
 Phase R6 remains available but approval-gated: create a preview, push/open a PR, deploy, or merge only if Jeff explicitly requests that lifecycle step.
 
-For local-only continuation, do not deploy/push/open PR. Ask Jeff to choose a Phase R7 candidate or name a different build target. If Jeff says to proceed locally without a specific target, start with the proposed R7 **Gate reason drill-down** slice and stop after a verified local commit.
+For local-only continuation, do not deploy/push/open PR. Ask Jeff to choose a Phase R7 candidate or name a different build slice. If Jeff says to proceed locally without a specific direction, start with the proposed R7 **Gate reason drill-down** slice and stop after a verified local commit.
 
 ---
 

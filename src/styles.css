@@ -338,7 +338,19 @@ h3 { margin-bottom: 0.65rem; }
 }
 
 .tab-copy { display: grid; gap: 0.25rem; }
-.tab-copy small { color: #958a76; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; }
+.tab-copy small {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  color: #958a76;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.tab-tag + .tab-tag::before {
+  content: '·';
+  margin-right: 0.5rem;
+}
 
 .boundary-note {
   display: grid;
@@ -927,6 +939,8 @@ h3 { margin-bottom: 0.65rem; }
   h1 { line-height: 0.95; }
   h2 { line-height: 0.98; }
   .signal-tabs { grid-template-columns: 1fr; }
+  .tab-copy small { display: grid; gap: 0.12rem; }
+  .tab-tag + .tab-tag::before { content: none; }
   .signal-hero { grid-template-columns: 1fr; min-height: auto; }
   .signal-score-block { min-height: 10rem; border-right: 0; border-bottom: 1px solid var(--line-dark); }
   .magnitude-deck, .evidence-grid, .review-strip, .context-strip, .decision-frame, .proof-summary { grid-template-columns: 1fr; }
