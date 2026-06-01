@@ -60,7 +60,7 @@ DO use:
 - Deterministic model functions and tests before UI claims.
 - Static/demo-first implementation suitable for later Vercel or Netlify hosting.
 
-External gates requiring Jeff approval:
+External gates requiring explicit approval:
 
 - Creating/changing a public repo.
 - Publishing/deploying a public preview beyond temporary local/Cloudflare-style review links.
@@ -392,9 +392,9 @@ git diff --check
 
 ### Phase R6 — Optional preview / PR / deployment lifecycle
 
-**Status:** blocked on Jeff approval.  
-**Goal:** Make a reviewable preview or PR only when explicitly requested.  
-**Stop condition:** Preview/PR status is explicit; no merge without Jeff saying `merge`.
+**Status:** blocked on explicit approval.
+**Goal:** Make a reviewable preview or PR only when explicitly requested.
+**Stop condition:** Preview/PR status is explicit; no merge without an explicit `merge` instruction.
 
 Before any preview:
 
@@ -411,13 +411,13 @@ Before PR/push:
 - [ ] Commit logical changes.
 - [ ] Push/open PR only if requested or consistent with current repo workflow.
 - [ ] Report CI status.
-- [ ] Do not merge without Jeff explicitly saying `merge`.
+- [ ] Do not merge without an explicit `merge` instruction.
 
 ### Phase R7 — Proposed next local-only phase
 
-**Status:** proposed / unassigned; do not implement without Jeff naming this or another build slice.
+**Status:** proposed / unassigned; do not implement without an explicit candidate or build slice.
 **Goal:** Add one small local-only product behavior slice that makes the console more useful as an inspectable decision surface without changing external lifecycle state.
-**Stop condition:** Jeff explicitly approves a local implementation slice, or this proposal remains docs-only.
+**Stop condition:** The local implementation slice is explicitly approved, or this proposal remains docs-only.
 
 Candidate local-only slices:
 
@@ -429,21 +429,21 @@ Candidate local-only slices:
 Constraints for any R7 implementation:
 
 - Local-only static app behavior; no preview, push, PR, deployment, or merge unless separately requested.
-- No new dependencies unless Jeff approves.
+- No new dependencies unless explicitly approved.
 - No persistence, storage APIs, telemetry, network calls, live integrations, sign-in, scraping, browser automation, or external writes.
 - Synthetic/public-safe data only.
 - Prefer TDD through existing model/adapter tests before UI wiring.
 - Preserve the existing public-safety scanner and no-side-effect receipt boundaries.
 
-Recommended first R7 candidate, if Jeff wants local implementation: **Gate reason drill-down**. It is the smallest behavior-focused continuation after R5, reinforces the artifact’s core product judgment, and avoids premature lifecycle or presentation work.
+Recommended first R7 candidate, if local implementation is requested: **Gate reason drill-down**. It is the smallest behavior-focused continuation after R5, reinforces the artifact’s core product judgment, and avoids premature lifecycle or presentation work.
 
 ---
 
 ## 6. Recommended next action
 
-Phase R6 remains available but approval-gated: create a preview, push/open a PR, deploy, or merge only if Jeff explicitly requests that lifecycle step.
+Phase R6 remains available but approval-gated: create a preview, push/open a PR, deploy, or merge only if explicitly requested.
 
-For local-only continuation, do not deploy/push/open PR. Ask Jeff to choose a Phase R7 candidate or name a different build slice. If Jeff says to proceed locally without a specific direction, start with the proposed R7 **Gate reason drill-down** slice and stop after a verified local commit.
+For local-only continuation, do not deploy/push/open PR. Ask for a Phase R7 candidate or a different build slice. If local continuation is requested without a specific direction, start with the proposed R7 **Gate reason drill-down** slice and stop after a verified local commit.
 
 ---
 
@@ -456,7 +456,7 @@ Every future coding completion must state:
 - Preview: URL or not created.
 - PR: link or not created.
 - CI: status or not applicable.
-- Merge: not merged unless Jeff said `merge`.
+- Merge: not merged unless an explicit `merge` instruction was given.
 - Cleanup: processes/branches handled or remaining.
 - Public safety: scanner/build/source/doc status.
 - Remaining actions: next phase/task from this master plan.
