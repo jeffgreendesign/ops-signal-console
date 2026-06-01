@@ -166,4 +166,42 @@ export const scenarios: SignalScenario[] = [
       { id: 'publish-opportunity-note', label: 'Publish opportunity note', actionType: 'public', requiresHumanApproval: true, requiredEvidence: ['independent-proof'] },
     ],
   },
+  {
+    id: 'scenario-frozen-launch-bundle-mismatch',
+    title: 'Frozen launch bundle mismatch needs fulfillment proof',
+    kind: 'fulfillmentConstraint',
+    sourceLabel: 'synthetic frozen launch review',
+    observedAt: '2026-05-30T15:00:00.000Z',
+    affectedBrands: ['Brand Grove'],
+    affectedSurfaces: ['bundle builder', 'item page', 'shipping promise'],
+    signalMagnitude: 80,
+    knownFacts: [
+      { id: 'fact-frozen-format', label: 'frozen format launch detected', strength: 'observed', detail: 'A synthetic launch packet includes a temperature-sensitive format.' },
+      { id: 'fact-bundle-state-mismatch', label: 'bundle availability mismatch', strength: 'observed', detail: 'The bundle surface and item surfaces show different readiness states in the invented packet.' },
+      { id: 'fact-shipping-constraint', label: 'shipping window constraint present', strength: 'observed', detail: 'The packet names limited fulfillment timing and region eligibility as launch constraints.' },
+      { id: 'fact-support-promise', label: 'support remediation copy exists', strength: 'observed', detail: 'The review packet includes support language for damaged or unsuitable arrivals.' },
+      { id: 'fact-public-claim-draft', label: 'delivery claim draft exists', strength: 'observed', detail: 'The packet includes draft assurance language that has not cleared review.' },
+    ],
+    inferredRisks: [
+      { id: 'risk-bundle-mismatch', label: 'bundle availability mismatch', riskLevel: 'high', rationale: 'A mismatch could let channel guidance outrun the actual bundle review state.' },
+      { id: 'risk-cold-chain-overclaim', label: 'cold-chain promise overclaim', riskLevel: 'medium', rationale: 'Delivery copy should stay gated until fulfillment proof and support proof are present.' },
+    ],
+    evidenceGaps: [
+      { id: 'gap-bundle-availability', label: 'bundle-availability-proof', requiredFor: ['update-launch-ops-note'], severityImpact: 'medium', confidenceImpact: 18 },
+      { id: 'gap-shipping-window', label: 'shipping-window-proof', requiredFor: ['update-launch-ops-note', 'publish-frozen-delivery-claim'], severityImpact: 'none', confidenceImpact: 16 },
+      { id: 'gap-region-eligibility', label: 'region-eligibility-proof', requiredFor: ['publish-frozen-delivery-claim'], severityImpact: 'none', confidenceImpact: 14 },
+      { id: 'gap-claim-substantiation', label: 'claim-substantiation-proof', requiredFor: ['publish-frozen-delivery-claim'], severityImpact: 'none', confidenceImpact: 20 },
+      { id: 'gap-support-remediation', label: 'support-remediation-proof', requiredFor: ['publish-frozen-delivery-claim'], severityImpact: 'none', confidenceImpact: 12 },
+    ],
+    recommendedChecks: [
+      'Compare the synthetic bundle builder state against item-page readiness before channel guidance changes.',
+      'Confirm fulfillment timing and region eligibility proof before public-facing copy changes.',
+      'Verify support remediation proof before using delivery assurance language.',
+    ],
+    gatedActions: [
+      { id: 'log-frozen-launch-review', label: 'Log frozen launch review packet', actionType: 'internal', requiresHumanApproval: false, requiredEvidence: [] },
+      { id: 'update-launch-ops-note', label: 'Update launch operations note', actionType: 'channel', requiresHumanApproval: true, requiredEvidence: ['bundle-availability-proof', 'shipping-window-proof'] },
+      { id: 'publish-frozen-delivery-claim', label: 'Publish frozen delivery claim', actionType: 'public', requiresHumanApproval: true, requiredEvidence: ['shipping-window-proof', 'region-eligibility-proof', 'claim-substantiation-proof', 'support-remediation-proof'] },
+    ],
+  },
 ];

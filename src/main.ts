@@ -135,6 +135,9 @@ function renderActionabilityPath(path: ReturnType<typeof buildConsoleView>['acti
   const stateLabel = path.state.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`).trim();
   const proofCopy = path.proofNeeded.length > 0 ? path.proofNeeded.join(' → ') : 'no missing proof for local mock action';
   const checks = path.nextChecks.slice(0, 2);
+  const gateDrilldown = path.gateDetails.map(
+    (detail) => `<span><b>${escapeHtml(detail.label)}</b>${escapeHtml(detail.value)}</span>`
+  );
 
   return `
     <li class="actionability-path actionability-${path.state}">
@@ -143,6 +146,7 @@ function renderActionabilityPath(path: ReturnType<typeof buildConsoleView>['acti
       <small>${escapeHtml(path.actionType)} · ${escapeHtml(path.gateStatus)} · externalSideEffects: ${escapeHtml(path.externalSideEffects)}</small>
       <p>${escapeHtml(path.primaryReason)}</p>
       <div class="path-proof">Proof path: ${escapeHtml(proofCopy)}</div>
+      <div class="gate-drilldown">${gateDrilldown.join('')}</div>
       ${checks.length ? renderList(checks, 'path-checks') : ''}
     </li>
   `;
@@ -256,13 +260,12 @@ function renderShell(): void {
             <p>${escapeHtml(view.subheader)}</p>
             <div class="model-note">
               <span>Display-safe model output</span>
-              <span>Invented facts, risks, gaps, and gates</span>
+              <span>${escapeHtml(view.categoryLabel)}</span>
             </div>
             <div class="hero-tags">
-              <span class="risk-tag">[${view.riskBadge.toUpperCase()} RISK]</span>
-              <span>[${view.confidenceLabel.toUpperCase()}]</span>
+              <span class="risk-tag">[${view.riskBadge.toUpperCase()}]</span>
               <span class="action-tag action-${view.magnitude.actionState}">[${view.magnitude.actionState.toUpperCase()}]</span>
-              <span>[${kindLabel(selectedScenario.kind).toUpperCase()} SIGNAL]</span>
+              <span>[${view.confidenceScore} CONF]</span>
             </div>
           </div>
         </header>

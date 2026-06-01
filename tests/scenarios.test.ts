@@ -29,14 +29,15 @@ function containsForbiddenTerm(text: string, term: string): boolean {
 }
 
 describe('Ops Signal Console scenario model', () => {
-  it('ships exactly five deterministic public-safe synthetic portfolio signal scenarios', () => {
-    expect(scenarios).toHaveLength(5);
+  it('ships exactly six deterministic public-safe synthetic portfolio signal scenarios', () => {
+    expect(scenarios).toHaveLength(6);
     expect(scenarios.map((scenario) => scenario.id)).toEqual([
       'scenario-quality-sample-drift',
       'scenario-claims-review-blocked',
       'scenario-channel-mismatch',
       'scenario-launch-readiness-mismatch',
-      'scenario-promising-channel-lift'
+      'scenario-promising-channel-lift',
+      'scenario-frozen-launch-bundle-mismatch'
     ]);
   });
 
@@ -119,12 +120,15 @@ describe('Ops Signal Console scenario model', () => {
     expect(view.context).toEqual([
       { label: 'Brands', value: 'Brand Atlas' },
       { label: 'Surfaces', value: 'pilot format, review bench' },
-      { label: 'Signal', value: 'quality sample drift' },
+      { label: 'Category', value: 'Quality evidence' },
       { label: 'Source', value: 'synthetic quality review queue' },
       { label: 'Observed', value: '2026-05-30' },
       { label: 'Evidence clarity', value: 'partial · 50/100' }
     ]);
+    expect(view.categoryLabel).toBe('Quality evidence');
     expect(view.riskBadge).toBe('high');
+    expect(view.confidenceLabel).toBe('low confidence');
+    expect(view.confidenceScore).toBe(35);
     expect(view.magnitude.severityScore).toBe(82);
     expect(view.magnitude.blastRadius).toBe('surface');
     expect(view.magnitude.evidenceCompleteness).toBe(50);
@@ -154,9 +158,9 @@ describe('Ops Signal Console scenario model', () => {
 
   it('models visual importance with varied severity, blast radius, and evidence completeness', () => {
     const views = scenarios.map(buildConsoleView);
-    expect(views.map((view) => view.magnitude.severityScore)).toEqual([82, 91, 80, 91, 80]);
-    expect(views.map((view) => view.magnitude.blastRadius)).toEqual(['surface', 'surface', 'surface', 'system', 'surface']);
-    expect(views.map((view) => view.magnitude.evidenceCompleteness)).toEqual([50, 60, 60, 50, 50]);
+    expect(views.map((view) => view.magnitude.severityScore)).toEqual([82, 91, 80, 91, 80, 88]);
+    expect(views.map((view) => view.magnitude.blastRadius)).toEqual(['surface', 'surface', 'surface', 'system', 'surface', 'system']);
+    expect(views.map((view) => view.magnitude.evidenceCompleteness)).toEqual([50, 60, 60, 50, 50, 50]);
   });
 
   it('does not use browser network, storage, or telemetry APIs in source code', () => {
