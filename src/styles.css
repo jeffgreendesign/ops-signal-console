@@ -702,6 +702,12 @@ h3 { margin-bottom: 0.65rem; }
   color: var(--muted);
   font-size: 0.68rem;
   letter-spacing: 0.08em;
+}
+
+.actionability-path small,
+.path-state,
+.path-proof,
+.gate-drilldown b {
   text-transform: uppercase;
 }
 
