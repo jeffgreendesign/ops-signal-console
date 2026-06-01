@@ -106,13 +106,7 @@ const actionabilityState = (action: ReturnType<typeof buildDisplayModel>['blocke
 };
 
 const buildActionabilitySummary = (display: ReturnType<typeof buildDisplayModel>): ActionabilitySummary => {
-  const nextProof = Array.from(
-    new Set(
-      display.evidenceGaps
-        .filter((gap) => display.blockedActions.some((action) => action.requiredEvidence.includes(gap.label)))
-        .map((gap) => gap.label)
-    )
-  );
+  const nextProof = Array.from(new Set(display.blockedActions.flatMap((action) => action.requiredEvidence)));
 
   return {
     posture: display.proofSummary.posture,

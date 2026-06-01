@@ -139,6 +139,7 @@ describe('Phase 3 UI adapter', () => {
     expect(view.actionability.posture).toBe('Action remains blocked until required proof and human approval clear.');
     expect(view.actionability.availableNow.map((path) => path.label)).toEqual(['Draft internal note']);
     expect(view.actionability.availableNow.every((path) => path.externalSideEffects === 'none')).toBe(true);
+    expect(view.actionability.blocked.every((path) => path.externalSideEffects === 'none')).toBe(true);
     expect(view.actionability.availableNow.every((path) => path.state === 'available')).toBe(true);
     expect(view.actionability.blocked.map((path) => ({ label: path.label, state: path.state, gateStatus: path.gateStatus }))).toEqual([
       { label: 'Release channel claim', state: 'needsEvidence', gateStatus: 'needsEvidence' },
@@ -151,6 +152,19 @@ describe('Phase 3 UI adapter', () => {
     for (const path of view.actionability.availableNow) {
       expect(path.actionType).toBe('internal');
     }
+  });
+
+  it('keeps required blocked-action proof visible even when a fixture omits the matching gap row', () => {
+    const baseScenario = findRawScenario('claimsReviewBlocked');
+    const scenario = {
+      ...baseScenario,
+      evidenceGaps: baseScenario.evidenceGaps.filter((gap) => gap.label !== 'reviewer-approval-proof'),
+    };
+
+    const view = buildConsoleView(scenario);
+
+    expect(view.actionability.blocked[0].proofNeeded).toContain('reviewer-approval-proof');
+    expect(view.actionability.nextProof).toContain('reviewer-approval-proof');
   });
 
   it('renders the opportunity signal as promising but not proven through the deterministic adapter', () => {

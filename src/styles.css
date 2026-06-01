@@ -904,11 +904,13 @@ h3 { margin-bottom: 0.65rem; }
   background: #f3e6c8;
   animation-delay: calc(var(--motion-stagger) * 1);
 }
+
 .evidence-plate.inference {
   --plate-accent: var(--warning);
   background: #eadfc6;
   animation-delay: calc(var(--motion-stagger) * 2);
 }
+
 .evidence-plate.gaps {
   --plate-accent: var(--danger);
   background:
@@ -916,6 +918,7 @@ h3 { margin-bottom: 0.65rem; }
     #eadbbb;
   animation-delay: calc(var(--motion-stagger) * 3);
 }
+
 .evidence-plate.gates {
   --plate-accent: var(--danger-bright);
   background: #1a1711;
