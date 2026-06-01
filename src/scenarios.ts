@@ -31,6 +31,25 @@ export interface ConsoleAction {
   disabledReason?: string;
 }
 
+export interface ActionabilityPath {
+  id: string;
+  label: string;
+  state: 'available' | 'blocked' | 'needsApproval' | 'needsEvidence';
+  actionType: 'internal' | 'channel' | 'public';
+  gateStatus: GateStatus;
+  primaryReason: string;
+  proofNeeded: string[];
+  nextChecks: string[];
+  externalSideEffects: 'none';
+}
+
+export interface ActionabilitySummary {
+  posture: string;
+  availableNow: ActionabilityPath[];
+  blocked: ActionabilityPath[];
+  nextProof: string[];
+}
+
 export interface ConsoleView {
   header: string;
   subheader: string;
@@ -44,6 +63,7 @@ export interface ConsoleView {
     reviewerSignals: string[];
   };
   proofSummary: ReturnType<typeof buildDisplayModel>['proofSummary'];
+  actionability: ActionabilitySummary;
   lanes: ConsoleLane[];
   nextChecks: string[];
   actions: ConsoleAction[];
@@ -79,6 +99,43 @@ const gapText = (gap: ReturnType<typeof buildDisplayModel>['evidenceGaps'][numbe
 const blockedActionReason = (reasons: string[]): string =>
   reasons.length > 0 ? reasons.join(' ') : 'Human approval required before mock execution.';
 
+const actionabilityState = (action: ReturnType<typeof buildDisplayModel>['blockedActions'][number]): ActionabilityPath['state'] => {
+  if (action.gateStatus === 'needsEvidence') return 'needsEvidence';
+  if (action.gateStatus === 'needsHumanApproval') return 'needsApproval';
+  return 'blocked';
+};
+
+const buildActionabilitySummary = (display: ReturnType<typeof buildDisplayModel>): ActionabilitySummary => {
+  const nextProof = Array.from(new Set(display.blockedActions.flatMap((action) => action.requiredEvidence)));
+
+  return {
+    posture: display.proofSummary.posture,
+    availableNow: display.allowedInternalActions.map((action) => ({
+      id: action.id,
+      label: action.label,
+      state: 'available',
+      actionType: action.actionType,
+      gateStatus: action.gateStatus,
+      primaryReason: 'Local internal review is available with no external side effects.',
+      proofNeeded: [],
+      nextChecks: display.recommendedChecks,
+      externalSideEffects: 'none',
+    })),
+    blocked: display.blockedActions.map((action) => ({
+      id: action.id,
+      label: action.label,
+      state: actionabilityState(action),
+      actionType: action.actionType,
+      gateStatus: action.gateStatus,
+      primaryReason: blockedActionReason(action.blockedReasons),
+      proofNeeded: action.requiredEvidence,
+      nextChecks: display.recommendedChecks,
+      externalSideEffects: 'none',
+    })),
+    nextProof,
+  };
+};
+
 export function buildConsoleView(scenario: Scenario): ConsoleView {
   const display = buildDisplayModel(scenario);
   const severityScore = display.severity.score;
@@ -107,6 +164,7 @@ export function buildConsoleView(scenario: Scenario): ConsoleView {
     },
     decisionFrame: decisionCopy(scenario),
     proofSummary: display.proofSummary,
+    actionability: buildActionabilitySummary(display),
     lanes: [
       { label: 'Known facts', items: display.knownFacts.map((fact) => `${fact.label}: ${fact.detail}`) },
       { label: 'Inferred risks', items: display.inferredRisks.map((risk) => `${risk.label}: ${risk.rationale}`) },

@@ -131,17 +131,42 @@ function renderDecisionFrame(view: ReturnType<typeof buildConsoleView>): string 
   `;
 }
 
-function renderProofSummary(view: ReturnType<typeof buildConsoleView>): string {
+function renderActionabilityPath(path: ReturnType<typeof buildConsoleView>['actionability']['availableNow'][number]): string {
+  const stateLabel = path.state.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`).trim();
+  const proofCopy = path.proofNeeded.length > 0 ? path.proofNeeded.join(' → ') : 'no missing proof for local mock action';
+  const checks = path.nextChecks.slice(0, 2);
+
   return `
-    <section class="proof-summary" aria-label="Proof gaps mapped to gated actions">
-      <article>
-        <p class="eyebrow">What changed / why blocked</p>
-        <strong>${escapeHtml(view.proofSummary.posture)}</strong>
-        ${renderList(view.proofSummary.blockedBecause, 'proof-gap-list')}
+    <li class="actionability-path actionability-${path.state}">
+      <span class="path-state">${escapeHtml(stateLabel)}</span>
+      <strong>${escapeHtml(path.label)}</strong>
+      <small>${escapeHtml(path.actionType)} · ${escapeHtml(path.gateStatus)} · externalSideEffects: ${escapeHtml(path.externalSideEffects)}</small>
+      <p>${escapeHtml(path.primaryReason)}</p>
+      <div class="path-proof">Proof path: ${escapeHtml(proofCopy)}</div>
+      ${checks.length ? renderList(checks, 'path-checks') : ''}
+    </li>
+  `;
+}
+
+function renderActionability(view: ReturnType<typeof buildConsoleView>): string {
+  return `
+    <section class="actionability-stack" aria-label="Actionability gate stack">
+      <div class="actionability-header">
+        <p class="eyebrow">Actionability</p>
+        <h3>What can happen now, what is held, and what proof changes it.</h3>
+        <strong>${escapeHtml(view.actionability.posture)}</strong>
+      </div>
+      <article class="actionability-column is-available">
+        <p class="eyebrow">Available now</p>
+        <ul>${view.actionability.availableNow.map(renderActionabilityPath).join('')}</ul>
       </article>
-      <article>
-        <p class="eyebrow">Proof gap → gated action</p>
-        ${renderList(view.proofSummary.gapToActionMap, 'proof-map-list')}
+      <article class="actionability-column is-blocked">
+        <p class="eyebrow">Blocked / gated</p>
+        <ul>${view.actionability.blocked.map(renderActionabilityPath).join('')}</ul>
+      </article>
+      <article class="actionability-column is-proof">
+        <p class="eyebrow">Next proof</p>
+        ${renderList(view.actionability.nextProof.length ? view.actionability.nextProof : ['Continue observation before wider action.'], 'next-proof-list')}
       </article>
     </section>
   `;
@@ -195,7 +220,6 @@ function renderActivityTrail(): void {
 function renderShell(): void {
   const view = buildConsoleView(selectedScenario);
   const [facts, inferences, gaps, gates] = view.lanes;
-  const actionBlocked = view.magnitude.actionState === 'blocked';
   const availableActions = view.actions.filter((action) => !action.disabled).length;
   const blockedActions = view.actions.length - availableActions;
 
@@ -247,7 +271,7 @@ function renderShell(): void {
 
         ${renderDecisionFrame(view)}
 
-        ${renderProofSummary(view)}
+        ${renderActionability(view)}
 
         <section class="magnitude-deck" aria-label="Signal magnitude">
           <article class="bone-card dominant">
@@ -260,11 +284,6 @@ function renderShell(): void {
             <strong class="magnitude-callout">${view.magnitude.evidenceCompleteness}/100</strong>
             ${renderScale('Completeness', view.magnitude.evidenceCompleteness)}
             ${renderScale('Severity', view.magnitude.severityScore)}
-          </article>
-          <article class="gate-card action-${view.magnitude.actionState} ${actionBlocked ? 'locked' : ''}">
-            <span>${actionBlocked ? '[ACTION BLOCKED]' : '[REVIEW PATH]'}</span>
-            <strong>${escapeHtml(gates.items[0] ?? 'No gated actions')}</strong>
-            <small>${availableActions} available · ${blockedActions} blocked</small>
           </article>
         </section>
 
