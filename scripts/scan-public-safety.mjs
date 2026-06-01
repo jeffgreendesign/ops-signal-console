@@ -171,9 +171,16 @@ function addFinding(findings, file, kind, detail, text, index, length) {
   });
 }
 
+function sanitizeForForbiddenScan(text) {
+  return ALLOWED_PROFILE_CHROME.reduce((current, allowed) => {
+    const pattern = new RegExp(escapeRegex(allowed), 'gi');
+    return current.replace(pattern, (match) => ' '.repeat(match.length));
+  }, text);
+}
+
 export function scanText(file, text) {
   const normalizedFile = file.replace(/\\/g, '/');
-  const sanitizedText = ALLOWED_PROFILE_CHROME.reduce((current, allowed) => current.replaceAll(allowed, ''), text);
+  const sanitizedText = sanitizeForForbiddenScan(text);
   const lowerText = sanitizedText.toLowerCase();
   const findings = [];
   const allowsForbiddenTerms = ALLOWED_FORBIDDEN_TERM_FILES.has(normalizedFile);
