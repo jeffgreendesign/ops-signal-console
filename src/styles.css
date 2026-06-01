@@ -488,6 +488,40 @@ h3 { margin-bottom: 0.65rem; }
   padding: 0.32rem 0.45rem;
 }
 
+.profile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-links a {
+  border: 1px solid color-mix(in srgb, var(--brass) 48%, transparent);
+  background: color-mix(in srgb, var(--brass) 8%, transparent);
+  color: var(--bone-100);
+  padding: 0.42rem 0.55rem;
+  text-decoration: none;
+  transition:
+    border-color var(--motion-quick) var(--ease-instrument),
+    color var(--motion-quick) var(--ease-instrument),
+    background-color var(--motion-quick) var(--ease-instrument),
+    box-shadow var(--motion-quick) var(--ease-instrument);
+}
+
+.profile-links a:hover,
+.profile-links a:focus-visible {
+  border-color: var(--brass-bright);
+  background: color-mix(in srgb, var(--brass) 16%, transparent);
+  color: var(--brass-bright);
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--brass-bright) 42%, transparent);
+  outline: none;
+}
+
 .model-note {
   margin-top: 1rem;
   color: #d9c89f;
