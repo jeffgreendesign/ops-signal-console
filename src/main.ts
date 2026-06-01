@@ -16,19 +16,6 @@ type ActivityTrailEntry = DecisionReceipt | { message: string };
 let selectedScenario = scenarios[0];
 let activityTrail: ActivityTrailEntry[] = [{ message: 'Console opened in synthetic portfolio demo mode.' }];
 
-const profileDestinations = {
-  source: [104, 116, 116, 112, 115, 58, 47, 47, 103, 105, 116, 104, 117, 98, 46, 99, 111, 109, 47, 106, 101, 102, 102, 103, 114, 101, 101, 110, 100, 101, 115, 105, 103, 110, 47, 111, 112, 115, 45, 115, 105, 103, 110, 97, 108, 45, 99, 111, 110, 115, 111, 108, 101],
-  portfolio: [104, 116, 116, 112, 115, 58, 47, 47, 119, 119, 119, 46, 104, 105, 114, 101, 106, 101, 102, 102, 103, 114, 101, 101, 110, 46, 99, 111, 109, 47],
-  network: [104, 116, 116, 112, 115, 58, 47, 47, 119, 119, 119, 46, 108, 105, 110, 107, 101, 100, 105, 110, 46, 99, 111, 109, 47, 105, 110, 47, 106, 101, 102, 102, 103, 114, 101, 101, 110, 119, 101, 98],
-  networkLabel: [76, 105, 110, 107, 101, 100, 73, 110]
-} as const;
-
-type ProfileDestination = keyof Omit<typeof profileDestinations, 'networkLabel'>;
-
-function decodeProfileValue(value: readonly number[]): string {
-  return String.fromCharCode(...value);
-}
-
 const radiusLabels: Record<BlastRadius, string> = {
   local: 'Local',
   surface: 'Surface',
@@ -252,9 +239,9 @@ function renderShell(): void {
           <span>Synthetic scenarios only</span>
         </div>
         <nav class="profile-links" aria-label="Project and profile links">
-          <a href="#" data-profile-link="source" rel="noreferrer">GitHub</a>
-          <a href="#" data-profile-link="portfolio" rel="noreferrer">Portfolio</a>
-          <a href="#" data-profile-link="network" rel="noreferrer">Profile</a>
+          <a href="https://github.com/jeffgreendesign/ops-signal-console" rel="noreferrer">GitHub</a>
+          <a href="https://www.hirejeffgreen.com/" rel="noreferrer">Portfolio</a>
+          <a href="https://www.linkedin.com/in/jeffgreenweb" rel="noreferrer">LinkedIn</a>
         </nav>
         <div class="signal-tabs">
           ${scenarios.map(renderScenarioButton).join('')}
@@ -343,13 +330,6 @@ function renderShell(): void {
       </section>
     </section>
   `;
-
-  document.querySelectorAll<HTMLAnchorElement>('[data-profile-link]').forEach((link) => {
-    const destination = link.dataset.profileLink as ProfileDestination | undefined;
-    if (!destination) return;
-    link.href = decodeProfileValue(profileDestinations[destination]);
-    if (destination === 'network') link.textContent = decodeProfileValue(profileDestinations.networkLabel);
-  });
 
   document.querySelectorAll<HTMLButtonElement>('[data-scenario-id]').forEach((button) => {
     button.addEventListener('click', () => {

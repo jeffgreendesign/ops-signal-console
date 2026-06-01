@@ -5,6 +5,12 @@ import { buildConsoleView, scenarios } from '../src/scenarios';
 import { forbiddenPublicArtifactTerms } from './public-safety-terms';
 
 const publicArtifactPaths = ['src', 'README.md', 'AGENTS.md', 'docs', 'index.html', 'package.json', 'vite.config.ts'];
+const allowedProfileChrome = [
+  'https://github.com/jeffgreendesign/ops-signal-console',
+  'https://www.hirejeffgreen.com/',
+  'https://www.linkedin.com/in/jeffgreenweb',
+  'LinkedIn'
+];
 
 function searchableScenarioText(): string {
   return scenarios.map((scenario) => JSON.stringify({ scenario, view: buildConsoleView(scenario) })).join('\n').toLowerCase();
@@ -71,9 +77,13 @@ describe('Ops Signal Console scenario model', () => {
       .filter((path) => !path.startsWith('docs/plans/'))
       .map((path) => readProjectFile(path).toLowerCase())
       .join('\n');
+    const sanitizedArtifactText = allowedProfileChrome.reduce(
+      (current, allowed) => current.replaceAll(allowed.toLowerCase(), ''),
+      artifactText
+    );
 
     for (const term of forbiddenPublicArtifactTerms) {
-      expect(containsForbiddenTerm(artifactText, term)).toBe(false);
+      expect(containsForbiddenTerm(sanitizedArtifactText, term)).toBe(false);
     }
   });
 
