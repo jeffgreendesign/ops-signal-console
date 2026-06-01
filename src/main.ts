@@ -260,13 +260,12 @@ function renderShell(): void {
             <p>${escapeHtml(view.subheader)}</p>
             <div class="model-note">
               <span>Display-safe model output</span>
-              <span>Invented facts, risks, gaps, and gates</span>
+              <span>${escapeHtml(view.categoryLabel)}</span>
             </div>
             <div class="hero-tags">
-              <span class="risk-tag">[${view.riskBadge.toUpperCase()} RISK]</span>
-              <span>[${view.confidenceLabel.toUpperCase()}]</span>
+              <span class="risk-tag">[${view.riskBadge.toUpperCase()}]</span>
               <span class="action-tag action-${view.magnitude.actionState}">[${view.magnitude.actionState.toUpperCase()}]</span>
-              <span>[${kindLabel(selectedScenario.kind).toUpperCase()} SIGNAL]</span>
+              <span>[${view.confidenceScore} CONF]</span>
             </div>
           </div>
         </header>

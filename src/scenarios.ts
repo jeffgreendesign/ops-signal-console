@@ -55,8 +55,10 @@ export interface ConsoleView {
   header: string;
   subheader: string;
   context: ContextItem[];
+  categoryLabel: string;
   riskBadge: RiskLevel;
   confidenceLabel: string;
+  confidenceScore: number;
   magnitude: SignalMagnitude;
   decisionFrame: {
     decisionStakes: string;
@@ -74,6 +76,25 @@ export const scenarios = signalScenarios;
 
 export const kindLabel = (kind: SignalScenario['kind']): string =>
   kind.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`);
+
+export const categoryLabel = (kind: SignalScenario['kind']): string => {
+  switch (kind) {
+    case 'claimsReviewBlocked':
+      return 'Claims safety';
+    case 'qualitySampleDrift':
+      return 'Quality evidence';
+    case 'channelMismatch':
+      return 'Demand signal';
+    case 'launchReadinessMismatch':
+      return 'Launch readiness';
+    case 'opportunitySignal':
+      return 'Opportunity proof';
+    case 'fulfillmentConstraint':
+      return 'Fulfillment proof';
+    default:
+      return kindLabel(kind);
+  }
+};
 
 const formatObservedAt = (observedAt: string): string => observedAt.slice(0, 10);
 
@@ -159,13 +180,15 @@ export function buildConsoleView(scenario: Scenario): ConsoleView {
     context: [
       { label: 'Brands', value: scenario.affectedBrands.join(', ') },
       { label: 'Surfaces', value: scenario.affectedSurfaces.join(', ') },
-      { label: 'Signal', value: kindLabel(scenario.kind) },
+      { label: 'Category', value: categoryLabel(scenario.kind) },
       { label: 'Source', value: display.sourceLabel },
       { label: 'Observed', value: formatObservedAt(scenario.observedAt) },
       { label: 'Evidence clarity', value: `${display.evidenceCompleteness.label} · ${display.evidenceCompleteness.score}/100` },
     ],
+    categoryLabel: categoryLabel(scenario.kind),
     riskBadge: display.severity.label,
-    confidenceLabel: `${display.confidence.label} confidence · ${display.confidence.score}/100`,
+    confidenceLabel: `${display.confidence.label} confidence`,
+    confidenceScore: display.confidence.score,
     magnitude: {
       severityScore,
       blastRadius,

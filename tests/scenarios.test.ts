@@ -120,12 +120,15 @@ describe('Ops Signal Console scenario model', () => {
     expect(view.context).toEqual([
       { label: 'Brands', value: 'Brand Atlas' },
       { label: 'Surfaces', value: 'pilot format, review bench' },
-      { label: 'Signal', value: 'quality sample drift' },
+      { label: 'Category', value: 'Quality evidence' },
       { label: 'Source', value: 'synthetic quality review queue' },
       { label: 'Observed', value: '2026-05-30' },
       { label: 'Evidence clarity', value: 'partial · 50/100' }
     ]);
+    expect(view.categoryLabel).toBe('Quality evidence');
     expect(view.riskBadge).toBe('high');
+    expect(view.confidenceLabel).toBe('low confidence');
+    expect(view.confidenceScore).toBe(35);
     expect(view.magnitude.severityScore).toBe(82);
     expect(view.magnitude.blastRadius).toBe('surface');
     expect(view.magnitude.evidenceCompleteness).toBe(50);

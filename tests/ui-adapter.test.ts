@@ -29,7 +29,8 @@ describe('Phase 3 UI adapter', () => {
       const view = buildConsoleView(uiScenario!);
 
       expect(view.riskBadge).toBe(display.severity.label);
-      expect(view.confidenceLabel).toBe(`${display.confidence.label} confidence · ${display.confidence.score}/100`);
+      expect(view.confidenceLabel).toBe(`${display.confidence.label} confidence`);
+      expect(view.confidenceScore).toBe(display.confidence.score);
       expect(view.magnitude).toEqual({
         severityScore: display.severity.score,
         blastRadius: display.blastRadius,
@@ -244,6 +245,16 @@ describe('Phase 3 UI adapter', () => {
     expect(source).toContain('path.gateDetails.map');
     expect(source).toContain('escapeHtml(detail.label)');
     expect(source).toContain('escapeHtml(detail.value)');
+  });
+
+  it('keeps hero issue labels compact instead of repeating long warning tags', () => {
+    const source = readFileSync(new URL('../src/main.ts', import.meta.url), 'utf8');
+
+    expect(source).toContain('view.categoryLabel');
+    expect(source).toContain('view.confidenceScore');
+    expect(source).not.toContain('RISK]</span>');
+    expect(source).not.toContain('SIGNAL]</span>');
+    expect(source).not.toContain('Invented facts, risks, gaps, and gates');
   });
 
   it('keeps UI-facing output public-safe and blocks non-internal actions with safe reasons', () => {
