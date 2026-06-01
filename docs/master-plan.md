@@ -2,9 +2,9 @@
 
 > **For future agents:** This is the authoritative plan. Use this before any `docs/plans/*` handoff. Do not continue a numbered phase from an older local handoff unless it matches this file.
 
-**Last reviewed:** 2026-05-31  
-**Repo:** project root (`ops-signal-console`)  
-**Project mode:** Fresh public-safe synthetic prototype, with extracted learnings only.  
+**Last reviewed:** 2026-06-01
+**Repo:** project root (`ops-signal-console`)
+**Project mode:** Fresh public-safe synthetic prototype, with extracted learnings only.
 **Current baseline:** Working static Vite/TypeScript demo with deterministic scenarios, display model, UI adapter, visual shell, proof-gap summary, typed mock receipts, public-safety release gate, product proof packaging, tests, and docs.
 
 ---
@@ -413,11 +413,37 @@ Before PR/push:
 - [ ] Report CI status.
 - [ ] Do not merge without Jeff explicitly saying `merge`.
 
+### Phase R7 — Proposed next local-only phase
+
+**Status:** proposed / unassigned; do not implement without Jeff naming this or another build target.
+**Goal:** Add one small local-only product behavior slice that makes the console more useful as an inspectable decision surface without changing external lifecycle state.
+**Stop condition:** Jeff explicitly approves a local implementation target, or this proposal remains docs-only.
+
+Candidate local-only slices:
+
+1. **Scenario comparison mode** — compare two synthetic scenarios side by side using existing deterministic display-model fields.
+2. **Gate reason drill-down** — expand one action gate to show the exact missing evidence and human approval requirements that keep it blocked.
+3. **Receipt replay view** — render the in-memory mock receipt trail as a review log grouped by scenario/action, still with `externalSideEffects: none`.
+4. **Proof checklist export copy** — generate display-safe local copy from known facts, inferred risks, evidence gaps, recommended checks, and blocked actions.
+
+Constraints for any R7 implementation:
+
+- Local-only static app behavior; no preview, push, PR, deployment, or merge unless separately requested.
+- No new dependencies unless Jeff approves.
+- No persistence, storage APIs, telemetry, network calls, live integrations, auth, scraping, browser automation, or external writes.
+- Synthetic/public-safe data only.
+- Prefer TDD through existing model/adapter tests before UI wiring.
+- Preserve the existing public-safety scanner and no-side-effect receipt boundaries.
+
+Recommended first R7 candidate, if Jeff wants local implementation: **Gate reason drill-down**. It is the smallest behavior-focused continuation after R5, reinforces the artifact’s core product judgment, and avoids premature lifecycle or presentation work.
+
 ---
 
 ## 6. Recommended next action
 
-Phase R6 remains the next step, but it is approval-gated: create a preview, push/open a PR, deploy, or merge only if Jeff explicitly requests that lifecycle step. For local-only continuation, stop at the verified Phase R5 commit and report branch/status.
+Phase R6 remains available but approval-gated: create a preview, push/open a PR, deploy, or merge only if Jeff explicitly requests that lifecycle step.
+
+For local-only continuation, do not deploy/push/open PR. Ask Jeff to choose a Phase R7 candidate or name a different build target. If Jeff says to proceed locally without a specific target, start with the proposed R7 **Gate reason drill-down** slice and stop after a verified local commit.
 
 ---
 
