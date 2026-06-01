@@ -1,7 +1,6 @@
 # Ops Signal Console
 
 <p align="center">
-  <a href="https://github.com/jeffgreendesign/ops-signal-console/commits/main/"><img src="https://img.shields.io/github/last-commit/jeffgreendesign/ops-signal-console?style=flat-square" alt="Last commit"></a>
   <a href="https://github.com/jeffgreendesign/ops-signal-console/blob/main/package.json"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 6.0">
   <img src="https://img.shields.io/badge/Vite-8.0-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite 8.0">
