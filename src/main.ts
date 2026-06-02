@@ -322,6 +322,15 @@ function renderShell(): void {
           <p class="eyebrow">Local action trail</p>
           <ul class="plate-list trail-list">${activityTrail.map(renderActivityEntry).join('')}</ul>
         </section>
+
+        <footer class="site-footer">
+          <span>© 2026 Jeff Green. Hosted on Netlify.</span>
+          <nav class="profile-links" aria-label="Project and profile links">
+            <a href="https://github.com/jeffgreendesign/ops-signal-console" rel="noreferrer">GitHub</a>
+            <a href="https://www.hirejeffgreen.com/" rel="noreferrer">Portfolio</a>
+            <a href="https://www.linkedin.com/in/jeffgreendev/" rel="noreferrer">LinkedIn</a>
+          </nav>
+        </footer>
       </section>
     </section>
   `;

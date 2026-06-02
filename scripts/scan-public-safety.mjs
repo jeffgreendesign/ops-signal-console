@@ -107,6 +107,13 @@ const ALLOWED_FORBIDDEN_TERM_FILES = new Set([
   'tests/public-safety-terms.ts',
 ]);
 
+const ALLOWED_PROFILE_CHROME = [
+  'https://github.com/jeffgreendesign/ops-signal-console',
+  'https://www.hirejeffgreen.com/',
+  'https://www.linkedin.com/in/jeffgreendev/',
+  'LinkedIn',
+];
+
 const SKIPPED_DIRECTORIES = new Set(['node_modules', '.git']);
 
 function escapeRegex(value) {
@@ -164,14 +171,22 @@ function addFinding(findings, file, kind, detail, text, index, length) {
   });
 }
 
+function sanitizeForForbiddenScan(text) {
+  return ALLOWED_PROFILE_CHROME.reduce((current, allowed) => {
+    const pattern = new RegExp(escapeRegex(allowed), 'gi');
+    return current.replace(pattern, (match) => ' '.repeat(match.length));
+  }, text);
+}
+
 export function scanText(file, text) {
   const normalizedFile = file.replace(/\\/g, '/');
-  const lowerText = text.toLowerCase();
+  const sanitizedText = sanitizeForForbiddenScan(text);
+  const lowerText = sanitizedText.toLowerCase();
   const findings = [];
   const allowsForbiddenTerms = ALLOWED_FORBIDDEN_TERM_FILES.has(normalizedFile);
   const isBuiltAsset = normalizedFile.startsWith('dist/');
   const isDoc = normalizedFile.endsWith('.md') || normalizedFile === 'README.md' || normalizedFile === 'AGENTS.md';
-  const isScenarioData = normalizedFile.includes('src/data/scenarios') || normalizedFile.includes('scenario');
+  const isScenarioData = (normalizedFile.includes('src/data/scenarios') || normalizedFile.includes('scenario')) && normalizedFile !== 'tests/scenarios.test.ts';
 
   for (const api of BANNED_APIS) {
     const index = lowerText.indexOf(api.toLowerCase());
@@ -187,7 +202,7 @@ export function scanText(file, text) {
 
   if (!allowsForbiddenTerms) {
     for (const term of FORBIDDEN_TERMS) {
-      const match = termPattern(term).exec(text);
+      const match = termPattern(term).exec(sanitizedText);
       if (match?.index !== undefined) addFinding(findings, normalizedFile, 'forbidden/source-identifying term', term, text, match.index, match[0].length);
     }
   }
