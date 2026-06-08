@@ -109,6 +109,12 @@ const ALLOWED_FORBIDDEN_TERM_FILES = new Set([
 
 const ALLOWED_PROFILE_CHROME = [
   'https://github.com/jeffgreendesign/ops-signal-console',
+  'https://github.com/jeffgreendesign/ops-signal-console/blob/main/package.json',
+  'https://img.shields.io/badge/license-MIT-green?style=flat-square',
+  'https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat-square&logo=typescript&logoColor=white',
+  'https://img.shields.io/badge/Vite-8.0-646CFF?style=flat-square&logo=vite&logoColor=white',
+  'https://img.shields.io/badge/data-synthetic-7C3AED?style=flat-square',
+  'https://img.shields.io/badge/status-active-16A34A?style=flat-square',
   'https://www.hirejeffgreen.com/',
   'https://www.linkedin.com/in/jeffgreendev/',
   'LinkedIn',
